@@ -1,3 +1,4 @@
+using Cinemachine;
 using System.Collections;
 using UnityEditor;
 using UnityEngine;
@@ -17,8 +18,7 @@ public class PlayerController : MonoBehaviour
 
     [Header("Shooting")]
     public GameObject bullet;
-    public GameObject normalMuzzle;
-    public GameObject doubleMuzzle;
+    public GameObject muzzle;
 
     [Header("Explosion")]
 
@@ -29,6 +29,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Transform groundCheck;
     [SerializeField] private LayerMask groundLayer;
 
+    [SerializeField] private CinemachineTargetGroup targetGroup;
+
     // TEMPORARY
     private float timeSinceLastShot = 0f;
     private bool canShoot = true;
@@ -36,15 +38,22 @@ public class PlayerController : MonoBehaviour
     private bool stunned = false;
 
     // Input system
-    private float horizontal;
+    private Vector2 movement;
     private Vector2 handInput;
 
     private bool jumped = false;
     private bool shooting = false;
+    private bool floorHit = false;
+    private bool falling = false;
     private string shoulderName;
+
+    private float fallTime = 0.5f;
 
     private void Start()
     {
+        targetGroup = FindObjectOfType<CinemachineTargetGroup>();
+
+        targetGroup.AddMember(transform, 1, 7);
         name = "Player_" + skins.userSkin;
     }
 
@@ -81,7 +90,7 @@ public class PlayerController : MonoBehaviour
         if (stunned)
             return;
 
-        transform.position += new Vector3(horizontal, 0) * speed * Time.deltaTime;
+        transform.position += new Vector3(movement.x, 0) * speed * Time.deltaTime;
     }
 
     private void Jump()
@@ -90,12 +99,50 @@ public class PlayerController : MonoBehaviour
         {
             rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
             canJump = false;
-        } 
+        }
         else if (jumped && canJump && !stunned)
         {
             rb.AddForce(Vector2.up * jumpForce * 2, ForceMode2D.Impulse);
             canJump = false;
         }
+
+        if (movement.y > 0.9 && IsGrounded() && !stunned)
+        {
+            rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+            canJump = false;
+        }
+        else if (movement.y > 0.9 && canJump && !stunned)
+        {
+            rb.AddForce(Vector2.up * jumpForce * 2, ForceMode2D.Impulse);
+            canJump = false;
+        }
+
+        if (floorHit && !stunned && !falling && !IsGrounded())
+        {
+            rb.AddForce(Vector2.down * 25, ForceMode2D.Impulse);
+            falling = true;
+
+            StartCoroutine(FallTime());
+        }
+
+        if (falling && IsGrounded())
+        {
+            falling = false;
+            Bombe();
+            // A fix, bn chuis éclaté !
+            StopCoroutine(FallTime());
+        }
+    }
+
+    // Cancel la chute si le joueur touche le sol
+    public IEnumerator FallTime()
+    {
+        // Si le joueur tombe durant plus de 2 secondes, c'est cancel
+        yield return new WaitForSeconds(fallTime);
+        falling = false;
+        rb.velocity = Vector2.zero;
+        canJump = true;
+        skins.spriteRenderer.color = Color.green;
     }
 
 
@@ -107,51 +154,36 @@ public class PlayerController : MonoBehaviour
 
     private void Shoot()
     {
-
         if (skins.userHand == 3)
         {
-            foreach (var muzzle in normalMuzzle.GetComponentsInChildren<Transform>())
-            {
-                if (muzzle != normalMuzzle.transform)
-                {
-                    GameObject bulletobject = Instantiate(bullet, muzzle.position, muzzle.rotation);
-                    Bullet bulletScript = bulletobject.GetComponent<Bullet>();
-                    bulletScript.shooter = this;
-                    bulletobject.transform.Rotate(0, 0, 0);
-                    bulletobject.name = "Bullet_" + name;
-                }
-            }
+            GameObject bulletobject = Instantiate(bullet, muzzle.transform.position, hand.transform.rotation);
+            Bullet bulletScript = bulletobject.GetComponent<Bullet>();
+            bulletScript.shooter = this;
+            bulletScript.charged = false;
         }
 
         if (skins.userHand == 2)
         {
-            foreach (var muzzle in doubleMuzzle.GetComponentsInChildren<Transform>())
-            {
-                if (muzzle != doubleMuzzle.transform)
-                {
-                    if (muzzle == doubleMuzzle.transform.GetChild(0))
-                    {
-                        GameObject bulletobject = Instantiate(bullet, muzzle.position, muzzle.rotation);
-                        bulletobject.transform.Rotate(0, 0, 50);
-                    }
-                    else
-                    {
-                        GameObject bulletobject = Instantiate(bullet, muzzle.position, muzzle.rotation);
-                        bulletobject.transform.Rotate(0, 0, 45);
-                    }
-                }
-            }
+            GameObject bulletobject = Instantiate(bullet, muzzle.transform.position, hand.transform.rotation);
+            Bullet bulletScript = bulletobject.GetComponent<Bullet>();
+            bulletScript.shooter = this;
+            bulletobject.transform.Rotate(0, 0, 55);
+            bulletScript.charged = true;
         }
 
         if (skins.userHand == 5)
         {
-            foreach (var otherPlayer in FindObjectsOfType<PlayerController>())
+            Bombe();
+        }
+    }
+
+    private void Bombe()
+    {
+        foreach (var otherPlayer in FindObjectsOfType<PlayerController>())
+        {
+            if (otherPlayer != this && Vector2.Distance(transform.position, otherPlayer.transform.position) < 5)
             {
-                // Si la distance entre les deux joueurs est inférieure à 5
-                if (otherPlayer != this && Vector2.Distance(transform.position, otherPlayer.transform.position) < 5)
-                {
-                    otherPlayer.HitPlayer(10, 20, gameObject, otherPlayer);
-                }
+                otherPlayer.HitPlayer(10, 5, gameObject, otherPlayer);
             }
         }
     }
@@ -169,7 +201,7 @@ public class PlayerController : MonoBehaviour
         StartCoroutine(Stun());
 
         if(player.stunned)
-            rb.AddForce(new Vector2(-direction.x, 1) * force, ForceMode2D.Impulse);
+            rb.AddForce(new Vector2(-direction.x, 5) * force, ForceMode2D.Impulse);
     }
     #endregion
 
@@ -208,16 +240,15 @@ public class PlayerController : MonoBehaviour
         if (skins.userHand == 5)
             hand.transform.rotation = Quaternion.Euler(0, 0, 0);
         else if (skins.userHand == 3)
-            hand.transform.rotation = Quaternion.Euler(0, 0, angle - 45);
+            hand.transform.rotation = Quaternion.Euler(0, 0, angle - 35);
         else
             hand.transform.rotation = Quaternion.Euler(0, 0, angle - 90);
     }
-
     #endregion
 
     public void OnMove(InputAction.CallbackContext context)
     {
-            horizontal = context.ReadValue<Vector2>().x;
+        movement = context.ReadValue<Vector2>();
     }
 
     public void OnHand(InputAction.CallbackContext context)
@@ -227,7 +258,12 @@ public class PlayerController : MonoBehaviour
 
     public void OnJump(InputAction.CallbackContext context)
     {
-            jumped = context.action.triggered;
+        jumped = context.action.triggered;
+    }
+
+    public void OnFloorHit(InputAction.CallbackContext context)
+    {
+        floorHit = context.action.triggered;
     }
 
     public void OnShoot(InputAction.CallbackContext context)

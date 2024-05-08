@@ -58,6 +58,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "FloorHit",
+                    "type": "Button",
+                    "id": "acc4e6fe-b960-4c27-8658-5c4883fbf2db",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -135,6 +144,17 @@
                     "processors": "",
                     "groups": "Controller",
                     "action": "ChangeHand",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "61a3d400-3a3b-48a9-9cd7-59103ccd7e11",
+                    "path": "<Gamepad>/buttonEast",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "FloorHit",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
