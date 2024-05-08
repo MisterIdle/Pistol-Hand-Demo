@@ -107,41 +107,73 @@ public class PlayerController : MonoBehaviour
 
     private void Shoot()
     {
-        HitPlayer(10, 1000, gameObject);
-    }
 
-    #region Hit
-    private void HitPlayer(int damage, int force, GameObject target)
-    {
-        foreach (var otherPlayer in FindObjectsOfType<PlayerController>())
+        if (skins.userHand == 3)
         {
-            if (otherPlayer != this && !otherPlayer.stunned)
+            foreach (var muzzle in normalMuzzle.GetComponentsInChildren<Transform>())
             {
-                Vector2 direction = otherPlayer.transform.position - target.transform.position;
-                direction.Normalize();
-
-                StartCoroutine(otherPlayer.Stun());
-                if (otherPlayer.stunned)
+                if (muzzle != normalMuzzle.transform)
                 {
-                    if (target.transform.position.y < otherPlayer.transform.position.y)
+                    GameObject bulletobject = Instantiate(bullet, muzzle.position, muzzle.rotation);
+                    Bullet bulletScript = bulletobject.GetComponent<Bullet>();
+                    bulletScript.shooter = this;
+                    bulletobject.transform.Rotate(0, 0, 0);
+                    bulletobject.name = "Bullet_" + name;
+                }
+            }
+        }
+
+        if (skins.userHand == 2)
+        {
+            foreach (var muzzle in doubleMuzzle.GetComponentsInChildren<Transform>())
+            {
+                if (muzzle != doubleMuzzle.transform)
+                {
+                    if (muzzle == doubleMuzzle.transform.GetChild(0))
                     {
-                        otherPlayer.rb.AddForce(direction * force);
+                        GameObject bulletobject = Instantiate(bullet, muzzle.position, muzzle.rotation);
+                        bulletobject.transform.Rotate(0, 0, 50);
                     }
                     else
                     {
-                        otherPlayer.rb.AddForce(new Vector2(direction.x, 1) * force);
+                        GameObject bulletobject = Instantiate(bullet, muzzle.position, muzzle.rotation);
+                        bulletobject.transform.Rotate(0, 0, 45);
                     }
                 }
-                else
+            }
+        }
+
+        if (skins.userHand == 5)
+        {
+            foreach (var otherPlayer in FindObjectsOfType<PlayerController>())
+            {
+                // Si la distance entre les deux joueurs est inférieure à 5
+                if (otherPlayer != this && Vector2.Distance(transform.position, otherPlayer.transform.position) < 5)
                 {
-                    Debug.Log("Hit");
+                    otherPlayer.HitPlayer(10, 20, gameObject, otherPlayer);
                 }
             }
         }
     }
+
+
+    #region Hit
+    public void HitPlayer(int degat, int force, GameObject target, PlayerController player)
+    {
+        if(player.stunned)
+            return;
+
+        Vector2 direction = target.transform.position - player.transform.position;
+        direction.Normalize();
+
+        StartCoroutine(Stun());
+
+        if(player.stunned)
+            rb.AddForce(new Vector2(-direction.x, 1) * force, ForceMode2D.Impulse);
+    }
     #endregion
 
-    private IEnumerator Stun()
+    public IEnumerator Stun()
     {
         stunned = true;
         skins.spriteRenderer.color = Color.red;

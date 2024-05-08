@@ -28,7 +28,7 @@ public class SkinManager : MonoBehaviour
     {
         gameManager = GameMananger.GameInstance;
 
-        userHand = 5;
+        userHand = 3;
         userSkin = gameManager.usedSkin;
         gameManager.usedSkin++;
 
