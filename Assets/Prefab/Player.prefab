@@ -264,12 +264,16 @@ MonoBehaviour:
   playerID: 0
   speed: 10
   jumpForce: 20
+  canJump: 1
   hand: {fileID: 2804290217738970132}
   maxHandDistance: 1.5
   handSpeed: 15
   bullet: {fileID: 0}
   muzzle: {fileID: 7710050152976292625}
+  stunned: 0
+  lives: 3
   HUD: {fileID: 0}
+  ShakeTime: 0
   face: {fileID: 702232491239003212}
 --- !u!114 &5380616594145753213
 MonoBehaviour:
@@ -293,6 +297,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: af085fcb306038a4fa92f3cff82efd56, type: 3}
   - {fileID: 21300000, guid: 099fa44e81c6c0f40b55e4f313f72155, type: 3}
   - {fileID: 21300000, guid: a39ecbf91826c294a88a1376b2d1c2fa, type: 3}
+  - {fileID: 21300000, guid: 3903febcd1eb3fb4db13e2c748686c6b, type: 3}
   skinSets:
   - bodySkin: {fileID: 21300000, guid: 5c18e954ebc5d784192f702b4e3e153e, type: 3}
     handSkins:
@@ -347,6 +352,7 @@ MonoBehaviour:
   spriteRenderer: {fileID: 0}
   handRenderers: []
   faceRenderer: {fileID: 0}
+  hudManager: {fileID: 0}
 --- !u!114 &5366638321565412040
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -38,11 +38,14 @@ public class SkinManager : MonoBehaviour
         userSkin = playerController.playerID;
         hudManager.skins[playerController.playerID].sprite = SetSkinHUD(userSkin);
 
-        int randomFace = Random.Range(0, faceSkins.Length);
+        // Random face sans compter le dernier qui est le visage mort
+        int randomFace = Random.Range(0, faceSkins.Length - 1);
 
         hudManager.face[playerController.playerID].sprite = faceSkins[randomFace];
         hudManager.face[playerController.playerID].color = new Color(1, 1, 1, 1);
         faceRenderer.sprite = faceSkins[randomFace];
+
+        hudManager.lives[playerController.playerID].color = Color.green;
 
     }
 
@@ -50,7 +53,39 @@ public class SkinManager : MonoBehaviour
     {
         SetSkins(userSkin);
         SetHand(userHand);
+        UpdateLifeColor();
     }
+
+    public void UpdateLifeColor()
+    {
+        foreach (PlayersController player in FindObjectsOfType<PlayersController>())
+        {
+            if (player.lives == 3)
+            {
+                hudManager.lives[player.playerID].color = Color.green;
+            }
+            else if (player.lives == 2)
+            {
+                hudManager.lives[player.playerID].color = Color.yellow;
+            }
+            else if (player.lives == 1)
+            {
+                hudManager.lives[player.playerID].color = Color.red;
+            }
+            else
+            {
+                // Ne changez le visage que du joueur actuel
+                if (player == playerController)
+                {
+                    hudManager.face[player.playerID].sprite = faceSkins[9];
+                    faceRenderer.sprite = faceSkins[9];
+                }
+
+                hudManager.lives[player.playerID].color = Color.black;
+            }
+        }
+    }
+
 
     public Sprite SetSkins(int skin)
     {

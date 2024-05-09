@@ -24,6 +24,7 @@ public class PlayersController : MonoBehaviour
     public GameObject bullet;
     public GameObject muzzle;
     public bool stunned = false;
+    public int lives = 3;
 
     [Header("Components")]
     private Rigidbody2D rb;
@@ -157,6 +158,8 @@ public class PlayersController : MonoBehaviour
 
         if (player.stunned)
             rb.AddForce(new Vector2(-direction.x, 1) * force, ForceMode2D.Impulse);
+
+        player.lives -= degat;
     }
 
     IEnumerator StunAndSlowMotion()

@@ -6,7 +6,7 @@ public class HUDManager : MonoBehaviour
 {
     public Image[] skins;
     public Image[] face;
-    public TMPro.TextMeshProUGUI[] lives;
+    public Image[] lives;
     public Image[] inputs;
 
     public TMPro.TextMeshProUGUI timer;
