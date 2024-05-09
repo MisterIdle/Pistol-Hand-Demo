@@ -1,7 +1,9 @@
-using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
+using System.Collections;
+using Cinemachine;
+using System;
 
 public class PlayersController : MonoBehaviour
 {
@@ -33,6 +35,7 @@ public class PlayersController : MonoBehaviour
     [Header("HUD")]
     public Canvas HUD;
     public Image skinHUD;
+    public float ShakeTime;
 
     [Header("Other")]
     public GameObject face;
@@ -43,7 +46,11 @@ public class PlayersController : MonoBehaviour
     private bool jumped = false;
     private bool shooting = false;
 
+    private float slowfactor = 0.05f;
+    private float slowDuration = 0.02f;
 
+    private CinemachineVirtualCamera virtualCamera;
+    private CinemachineTargetGroup targetGroup;
 
     private void Awake()
     {
@@ -52,6 +59,11 @@ public class PlayersController : MonoBehaviour
         skins = GetComponent<SkinManager>();
         groundCheck = transform.Find("GroundCheck");
         groundLayer = LayerMask.GetMask("Ground");
+
+        virtualCamera = FindAnyObjectByType<CinemachineVirtualCamera>();
+        targetGroup = FindAnyObjectByType<CinemachineTargetGroup>();
+
+        targetGroup.AddMember(transform, 1, 7);
 
         name = "Player " + playerID;
     }
@@ -68,6 +80,15 @@ public class PlayersController : MonoBehaviour
             Punch();
         }
 
+        if(ShakeTime > 0)
+        {
+            ShakeTime -= Time.deltaTime;
+            if (ShakeTime <= 0)
+            {
+                CinemachineBasicMultiChannelPerlin noise = virtualCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
+                noise.m_AmplitudeGain = 0;
+            }
+        }
     }
 
     void Movement()
@@ -82,10 +103,10 @@ public class PlayersController : MonoBehaviour
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
         }
 
-        if(movement.y > 0.9 && IsGrounded() && !stunned)
-        {
-            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
-        }
+        //if (movement.y > 0.9 && IsGrounded() && !stunned)
+        //{
+        //    rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+        //}
     }
 
     void Hand()
@@ -108,20 +129,16 @@ public class PlayersController : MonoBehaviour
 
     void Punch()
     {
-        // Dans un distance de 3 unités, tout le monde est hit
-        if (Vector2.Distance(hand.transform.position, transform.position) < 3)
-        {
-            Collider2D[] hits = Physics2D.OverlapCircleAll(hand.transform.position, 0.5f);
+        Collider2D[] hits = Physics2D.OverlapCircleAll(hand.transform.position, 1f);
 
-            foreach (Collider2D hit in hits)
+        foreach (Collider2D hit in hits)
+        {
+            if (hit.CompareTag("Player"))
             {
-                if (hit.CompareTag("Player"))
+                PlayersController player = hit.GetComponent<PlayersController>();
+                if (player.playerID != playerID)
                 {
-                    PlayersController player = hit.GetComponent<PlayersController>();
-                    if (player.playerID != playerID)
-                    {
-                        player.HitPlayer(1, 20, hand, player);
-                    }
+                    player.HitPlayer(1, 20, hand, player);
                 }
             }
         }
@@ -135,10 +152,22 @@ public class PlayersController : MonoBehaviour
         Vector2 direction = target.transform.position - player.transform.position;
         direction.Normalize();
 
-        StartCoroutine(Stun());
+        StartCoroutine(player.Stun());
+        StartCoroutine(StunAndSlowMotion());
 
         if (player.stunned)
-            rb.AddForce(new Vector2(-direction.x, 1.5f) * force, ForceMode2D.Impulse);
+            rb.AddForce(new Vector2(-direction.x, 1) * force, ForceMode2D.Impulse);
+    }
+
+    IEnumerator StunAndSlowMotion()
+    {
+        Time.timeScale = slowfactor;
+        Time.fixedDeltaTime = Time.timeScale * 0.02f;
+
+        yield return new WaitForSeconds(slowDuration);
+
+        ShakeCamera(5f, .1f);
+        Time.timeScale = 1f;
     }
 
     public IEnumerator Stun()
@@ -155,6 +184,13 @@ public class PlayersController : MonoBehaviour
     bool IsGrounded()
     {
         return Physics2D.OverlapCircle(groundCheck.position, 0.1f, groundLayer);
+    }
+
+    void ShakeCamera(float intensity, float time)
+    {
+        CinemachineBasicMultiChannelPerlin noise = virtualCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
+        noise.m_AmplitudeGain = intensity;
+        ShakeTime = time;
     }
 
     public void OnMove(InputAction.CallbackContext context)
