@@ -24,15 +24,6 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Dash",
-                    "type": "Button",
-                    "id": "469b408c-b60e-4866-97d1-a597fe92193e",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
                     "name": "Hand",
                     "type": "PassThrough",
                     "id": "d50e06fb-f975-4f3d-bf4c-b2007ea1dd3a",
@@ -42,27 +33,9 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "ChangeHand",
-                    "type": "Value",
-                    "id": "c775c86e-dfa4-472a-afe7-086179293c0a",
-                    "expectedControlType": "Touch",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": true
-                },
-                {
                     "name": "Shoot",
                     "type": "Button",
                     "id": "75fa2080-7ba5-434a-bd90-2f759e4194b0",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "FloorHit",
-                    "type": "Button",
-                    "id": "acc4e6fe-b960-4c27-8658-5c4883fbf2db",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -94,17 +67,6 @@
                 },
                 {
                     "name": "",
-                    "id": "0106222f-fdc7-4f48-9297-d92c5f70265c",
-                    "path": "<Gamepad>/buttonEast",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Controller",
-                    "action": "Dash",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "f9290b17-343b-40fc-b90f-b545281e39dc",
                     "path": "<Gamepad>/rightStick",
                     "interactions": "",
@@ -122,39 +84,6 @@
                     "processors": "",
                     "groups": "Controller",
                     "action": "Shoot",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "2a9948ec-b9fc-46fd-97ea-d13562f9c093",
-                    "path": "<Gamepad>/rightShoulder",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Controller",
-                    "action": "ChangeHand",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "6296be29-3d8b-4de5-aa27-ef9b9894763c",
-                    "path": "<Gamepad>/leftShoulder",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Controller",
-                    "action": "ChangeHand",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "61a3d400-3a3b-48a9-9cd7-59103ccd7e11",
-                    "path": "<Gamepad>/buttonEast",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "FloorHit",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

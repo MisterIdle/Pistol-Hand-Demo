@@ -116,7 +116,7 @@ Transform:
   m_GameObject: {fileID: 1248633252260726880}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -6.65, y: 0, z: -0.007927253}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -261,20 +261,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9cf0a46ff30c885409b122dfafe3f86b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerID: 0
   speed: 10
-  jumpForce: 10
+  jumpForce: 20
   hand: {fileID: 2804290217738970132}
-  maxHandDistance: 2
+  maxHandDistance: 1.5
   handSpeed: 15
-  bullet: {fileID: 3507916405556943939, guid: 42fa32a48c4a8fe4dba54148892625be, type: 3}
+  bullet: {fileID: 0}
   muzzle: {fileID: 7710050152976292625}
-  rb: {fileID: 4493707623343558858}
-  trail: {fileID: 1277341572246597970}
-  skins: {fileID: 5380616594145753213}
-  groundCheck: {fileID: 5722906473969379226}
-  groundLayer:
-    serializedVersion: 2
-    m_Bits: 64
+  HUD: {fileID: 0}
+  face: {fileID: 702232491239003212}
 --- !u!114 &5380616594145753213
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -348,10 +344,9 @@ MonoBehaviour:
     - {fileID: 21300000, guid: c433b25c3b2c1344b9115d9cbae2f266, type: 3}
   userSkin: 0
   userHand: 0
-  spriteRenderer: {fileID: 1672105894674671421}
-  handRenderers:
-  - {fileID: 7720221171210681012}
-  faceRenderer: {fileID: 7070382546832591052}
+  spriteRenderer: {fileID: 0}
+  handRenderers: []
+  faceRenderer: {fileID: 0}
 --- !u!114 &5366638321565412040
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -410,10 +405,6 @@ MonoBehaviour:
     m_ActionId: 9901fc89-6813-4b4d-bbeb-a0abfec58b01
     m_ActionName: Player/Jump[/Keyboard/space,/XInputControllerWindows/buttonSouth]
   - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 469b408c-b60e-4866-97d1-a597fe92193e
-    m_ActionName: Player/New action
-  - m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 6560098936358831239}
         m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
@@ -445,38 +436,6 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: 75fa2080-7ba5-434a-bd90-2f759e4194b0
     m_ActionName: Player/Shoot[/Mouse/leftButton,/XInputControllerWindows/rightTrigger,/XInputControllerWindows1/rightTrigger]
-  - m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 6560098936358831239}
-        m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
-        m_MethodName: OnChangeHand
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-    m_ActionId: c775c86e-dfa4-472a-afe7-086179293c0a
-    m_ActionName: Player/ChangeHand[/XInputControllerWindows/rightShoulder,/XInputControllerWindows1/rightShoulder,/XInputControllerWindows/leftShoulder,/XInputControllerWindows1/leftShoulder]
-  - m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 6560098936358831239}
-        m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
-        m_MethodName: OnFloorHit
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-    m_ActionId: acc4e6fe-b960-4c27-8658-5c4883fbf2db
-    m_ActionName: Player/FloorHit[/XInputControllerWindows/buttonEast,/XInputControllerWindows1/buttonEast]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: Keyboard
   m_DefaultActionMap: Player

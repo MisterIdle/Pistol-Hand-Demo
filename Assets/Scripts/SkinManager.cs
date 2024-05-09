@@ -18,23 +18,32 @@ public class SkinManager : MonoBehaviour
     public int userSkin = 0;
     public int userHand = 0;
 
+    private PlayersController playerController;
+
     public SpriteRenderer spriteRenderer;
-    [SerializeField] private SpriteRenderer[] handRenderers;
-    [SerializeField] private SpriteRenderer faceRenderer;
+    public SpriteRenderer[] handRenderers;
+    public SpriteRenderer faceRenderer;
 
-    private GameMananger gameManager;
+    public HUDManager hudManager;
 
-    void Awake()
+    void Start()
     {
-        gameManager = GameMananger.GameInstance;
+        playerController = GetComponent<PlayersController>();
+        spriteRenderer = playerController.GetComponent<SpriteRenderer>();
+        handRenderers = playerController.hand.GetComponentsInChildren<SpriteRenderer>();
+        faceRenderer = playerController.face.GetComponent<SpriteRenderer>();
 
-        userHand = 3;
-        userSkin = gameManager.usedSkin;
-        gameManager.usedSkin++;
+        hudManager = FindObjectOfType<HUDManager>();
 
-        Debug.Log("Skin: " + userSkin);
+        userSkin = playerController.playerID;
+        hudManager.skins[playerController.playerID].sprite = SetSkinHUD(userSkin);
 
-        faceRenderer.sprite = faceSkins[Random.Range(0, faceSkins.Length)];
+        int randomFace = Random.Range(0, faceSkins.Length);
+
+        hudManager.face[playerController.playerID].sprite = faceSkins[randomFace];
+        hudManager.face[playerController.playerID].color = new Color(1, 1, 1, 1);
+        faceRenderer.sprite = faceSkins[randomFace];
+
     }
 
     void Update()
@@ -43,14 +52,15 @@ public class SkinManager : MonoBehaviour
         SetHand(userHand);
     }
 
-    void SetSkins(int skin)
+    public Sprite SetSkins(int skin)
     {
         spriteRenderer.sprite = skinSets[skin].bodySkin;
+        return spriteRenderer.sprite;
+    }
 
-        for (int i = 0; i < handRenderers.Length; i++)
-        {
-            handRenderers[i].sprite = skinSets[skin].handSkins[i];
-        }
+    public Sprite SetSkinHUD(int skin)
+    {
+        return skinSets[skin].bodySkin;
     }
 
     public void SetHand(int hand)
