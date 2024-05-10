@@ -12,8 +12,8 @@ GameObject:
   - component: {fileID: 2935224619190230253}
   - component: {fileID: 6430702863527542250}
   - component: {fileID: 1212140102535445982}
-  - component: {fileID: 342028386737306194}
   - component: {fileID: 5501890254299538014}
+  - component: {fileID: 7021447693574093629}
   m_Layer: 0
   m_Name: Bullet
   m_TagString: Bullet
@@ -56,7 +56,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: e5d00e40f81a87f498e7617bd5fa11c0, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -78,7 +78,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: -2413806693520163455, guid: ebe73ca9363db456bacf42c025bb4847, type: 3}
-  m_Color: {r: 0.3563546, g: 0.54400575, b: 0.8301887, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -150,20 +150,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!114 &342028386737306194
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3507916405556943939}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 26e6b214460e4644da722c9e0e166017, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  speed: 20
-  lifeTime: 2
 --- !u!96 &5501890254299538014
 TrailRenderer:
   serializedVersion: 3
@@ -216,7 +202,7 @@ TrailRenderer:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0.1
+        value: 0.2
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -277,3 +263,19 @@ TrailRenderer:
   m_Autodestruct: 0
   m_Emitting: 1
   m_ApplyActiveColorSpace: 1
+--- !u!114 &7021447693574093629
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3507916405556943939}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bdb6f186d0b76494090602a644a33e4b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speed: 40
+  damage: 1
+  rb: {fileID: 1212140102535445982}
+  shooter: {fileID: 0}

@@ -11,6 +11,8 @@ public class PlayersManager : MonoBehaviour
         playersController = FindObjectOfType<PlayersController>();
         playersController.playerID = PlayerID;
 
+        Debug.Log("Player " + PlayerID + " joined the game!");
+
         PlayerID++;
     }
 }

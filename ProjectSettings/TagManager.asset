@@ -5,15 +5,17 @@ TagManager:
   serializedVersion: 2
   tags:
   - Bullet
+  - SpawnPoint
+  - Camera
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Camera
   - Water
   - UI
   - Ground
-  - 
+  - Post
   - 
   - 
   - 
@@ -41,4 +43,7 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Canvas
+    uniqueID: 1499402831
     locked: 0

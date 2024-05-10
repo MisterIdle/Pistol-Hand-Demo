@@ -16,7 +16,7 @@ public class SkinManager : MonoBehaviour
     public SkinSet[] skinSets;
 
     public int userSkin = 0;
-    public int userHand = 0;
+    public int userHand = 1;
 
     private PlayersController playerController;
 
@@ -26,7 +26,7 @@ public class SkinManager : MonoBehaviour
 
     public HUDManager hudManager;
 
-    void Start()
+    void Awake()
     {
         playerController = GetComponent<PlayersController>();
         spriteRenderer = playerController.GetComponent<SpriteRenderer>();
@@ -38,7 +38,6 @@ public class SkinManager : MonoBehaviour
         userSkin = playerController.playerID;
         hudManager.skins[playerController.playerID].sprite = SetSkinHUD(userSkin);
 
-        // Random face sans compter le dernier qui est le visage mort
         int randomFace = Random.Range(0, faceSkins.Length - 1);
 
         hudManager.face[playerController.playerID].sprite = faceSkins[randomFace];
@@ -46,7 +45,6 @@ public class SkinManager : MonoBehaviour
         faceRenderer.sprite = faceSkins[randomFace];
 
         hudManager.lives[playerController.playerID].color = Color.green;
-
     }
 
     void Update()
