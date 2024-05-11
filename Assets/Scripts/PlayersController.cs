@@ -7,7 +7,7 @@ public class PlayersController : MonoBehaviour
 {
     [Header("Player")]
     public int playerID = 0;
-    public int lives = 3;
+    public int lifes = 3;
     public bool stunned = false;
     public bool isDead = false;
     public int wins = 0;
@@ -43,6 +43,7 @@ public class PlayersController : MonoBehaviour
     [Header("Visual")]
     public GameObject hand;
     public GameObject face;
+    public SpriteRenderer crown;
 
     [Header("Input")]
     private Vector2 movement;
@@ -69,11 +70,17 @@ public class PlayersController : MonoBehaviour
 
         DontDestroyOnLoad(gameObject);
 
+        crown.enabled = false;
+        crown.color = new Color(0.5f, 0.3f, 0.1f);
+
         name = "Player " + playerID;
     }
 
     void Update()
     {
+        ColoredCrown();
+        LimitedZone();
+
         if (!stunned && canMove && !dash)
         {
             Movement();
@@ -121,7 +128,6 @@ public class PlayersController : MonoBehaviour
         Vector3 directionToHand = hand.transform.position - transform.position;
         float angle = Mathf.Atan2(directionToHand.y, directionToHand.x) * Mathf.Rad2Deg;
 
-        // if hand is on the right side of the player flip the player
         if (hand.transform.position.x > transform.position.x)
         {
             hand.transform.localScale = new Vector3(1, 1, 1);
@@ -184,9 +190,7 @@ public class PlayersController : MonoBehaviour
             {
                 PlayersController player = hit.GetComponent<PlayersController>();
                 if (player.playerID != playerID)
-                {
                     player.HitPlayer(1, 30, hand, player);
-                }
             }
         }
     }
@@ -210,26 +214,53 @@ public class PlayersController : MonoBehaviour
         StartCoroutine(player.Stun());
 
         StartCoroutine(gameManager.StunAndSlowMotion());
-        gameManager.ShakeCamera(5f, .1f);
+        gameManager.ShakeCamera(1f, .1f);
 
         if (player.stunned)
             rb.AddForce(new Vector2(-direction.x, 1) * force, ForceMode2D.Impulse);
 
-        player.lives -= degat;
+        player.lifes -= degat;
     }
 
     private void Dead()
     {
-        if(lives <= 0)
+        if(lifes <= 0)
         {
             Instantiate(explosion, transform.position, Quaternion.identity);
             IsDead(true);
         }
     }
 
+    void LimitedZone()
+    {
+        if (Camera.main.WorldToScreenPoint(transform.position).x > Screen.width)
+        {
+            rb.AddForce(new Vector2(-2, 1), ForceMode2D.Impulse);
+            StartCoroutine(StunWihoutFreeze());
+        }
+
+        if (Camera.main.WorldToScreenPoint(transform.position).x < 0)
+        {
+            rb.AddForce(new Vector2(2, 1), ForceMode2D.Impulse);
+            StartCoroutine(StunWihoutFreeze());
+        }
+
+        if (Camera.main.WorldToScreenPoint(transform.position).y > Screen.height)
+        {
+            rb.AddForce(new Vector2(0, -2), ForceMode2D.Impulse);
+            StartCoroutine(StunWihoutFreeze());
+        }
+
+        if (Camera.main.WorldToScreenPoint(transform.position).y < 0 && gameManager.inGame)
+        {
+            lifes = 0;
+        }
+
+    }
+
     public void IsDead(bool state)
     {
-        if(state)
+        if (state)
         {
             skins.spriteRenderer.enabled = false;
             skins.faceRenderer.enabled = false;
@@ -238,11 +269,11 @@ public class PlayersController : MonoBehaviour
             skins.hudManager.face[playerID].sprite = skins.faceSkins[skins.faceSkins.Length - 1];
             skins.faceRenderer.sprite = skins.faceSkins[skins.faceSkins.Length - 1];
 
-            GetComponent<BoxCollider2D>().enabled = false;
-
             gameManager.playersDeath++;
 
-            canMove = false;
+            GetComponent<Collider2D>().enabled = false;
+
+            Debug.Log("Player " + playerID + " is dead");
             isDead = true;
         }
         else
@@ -254,10 +285,9 @@ public class PlayersController : MonoBehaviour
             skins.hudManager.face[playerID].sprite = skins.faceSkins[skins.userHead];
             skins.faceRenderer.sprite = skins.faceSkins[skins.userHead];
 
-            lives = 3;
+            GetComponent<Collider2D>().enabled = true;
 
-            GetComponent<BoxCollider2D>().enabled = true;
-
+            Debug.Log("Player " + playerID + " is back to life");
             isDead = false;
         }
     }
@@ -271,6 +301,27 @@ public class PlayersController : MonoBehaviour
         skins.spriteRenderer.color = Color.white;
         rb.velocity = Vector2.zero;
         canJump = true;
+    }
+
+    public IEnumerator StunWihoutFreeze()
+    {
+        skins.spriteRenderer.color = Color.gray;
+        yield return new WaitForSeconds(0.3f);
+        skins.spriteRenderer.color = Color.white;
+        rb.velocity = Vector2.zero;
+        canJump = true;
+    }
+
+    public void ColoredCrown()
+    {
+        if(wins == 1)
+            crown.color = new Color(0.5f, 0.3f, 0.1f);
+
+        else if (wins == 2)
+            crown.color = Color.gray;
+
+        else if(wins == 3)
+            crown.color = Color.yellow;
     }
 
     bool IsGrounded()

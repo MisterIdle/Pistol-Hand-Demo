@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 [System.Serializable]
@@ -61,11 +58,11 @@ public class SkinManager : MonoBehaviour
     {
         foreach (PlayersController player in FindObjectsOfType<PlayersController>())
         {
-            if (player.lives == 3)
+            if (player.lifes == 3)
                 hudManager.lives[player.playerID].color = Color.green;
-            else if (player.lives == 2)
+            else if (player.lifes == 2)
                 hudManager.lives[player.playerID].color = Color.yellow;
-            else if (player.lives == 1)
+            else if (player.lifes == 1)
                 hudManager.lives[player.playerID].color = Color.red;
             else
                 hudManager.lives[player.playerID].color = Color.black;

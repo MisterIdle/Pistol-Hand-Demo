@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Bullet : MonoBehaviour
@@ -11,6 +9,8 @@ public class Bullet : MonoBehaviour
     public PlayersController shooter;
     void Start()
     {
+        Destroy(gameObject, 5f);
+
         rb.velocity = transform.right * speed;
     }
 
@@ -24,7 +24,7 @@ public class Bullet : MonoBehaviour
             {
                 players.HitPlayer(damage, 20, gameObject, players);
                 Destroy(gameObject);
-            }
+            } 
         }
 
         if (collision.gameObject.layer == 6)

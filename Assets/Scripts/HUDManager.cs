@@ -1,6 +1,5 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.InputSystem.HID;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -17,6 +16,7 @@ public class HUDManager : MonoBehaviour
     public TMPro.TextMeshProUGUI timer;
     public TMPro.TextMeshProUGUI round;
     public TMPro.TextMeshProUGUI count;
+    public TMPro.TextMeshProUGUI whoWins;
 
     void Start()
     {
