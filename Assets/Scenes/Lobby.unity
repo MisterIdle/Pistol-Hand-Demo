@@ -610,8 +610,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.000947, y: -0.002326}
-  m_SizeDelta: {x: 97.024, y: 105.7}
+  m_AnchoredPosition: {x: -37.4087, y: 7.9724}
+  m_SizeDelta: {x: 321.9889, y: 324.3339}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &245298016
 MonoBehaviour:
@@ -1085,7 +1085,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: -89.64111}
+  m_AnchoredPosition: {x: 0, y: -89.640625}
   m_SizeDelta: {x: 682.4102, y: 96.843}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &726092644
@@ -1321,7 +1321,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: -0.06939697, y: 1.5946102, z: -0.9116516, w: 0}
+  m_margin: {x: -460.031, y: 1.5946102, z: -459.98608, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -3608,13 +3608,17 @@ MonoBehaviour:
   player: {fileID: 0}
   hudManager: {fileID: 0}
   skinManager: {fileID: 0}
-  scenes:
-  - {fileID: 102900000, guid: 2cda990e2423bbf4892e6590ba056729, type: 3}
-  - {fileID: 102900000, guid: dd7a624d170478c47a8d7561e56b3e67, type: 3}
-  gameCanStart: 0
-  inGame: 0
+  slowfactor: 0.05
+  slowDuration: 0.02
+  shakeTime: 0
   playersInGame: 0
+  playersDeath: 0
+  randomArena: 0
   round: 0
+  needToWin: 1
+  inGame: 0
+  inLobby: 1
+  draw: 0
 --- !u!1 &1211739499
 GameObject:
   m_ObjectHideFlags: 0
@@ -4964,7 +4968,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: PRESS A TO JOIN
+  m_text: PRESS ANY KEYS TO JOIN
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -4991,8 +4995,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 100
-  m_fontSizeBase: 100
+  m_fontSize: 70
+  m_fontSizeBase: 70
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -5027,7 +5031,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: -0.06939697, y: 1.5946102, z: -0.9116516, w: 0}
+  m_margin: {x: -459.99576, y: 1.5946102, z: -460.01236, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -5105,7 +5109,7 @@ MonoBehaviour:
   m_NotificationBehavior: 2
   m_MaxPlayerCount: 4
   m_AllowJoining: 1
-  m_JoinBehavior: 1
+  m_JoinBehavior: 0
   m_PlayerJoinedEvent:
     m_PersistentCalls:
       m_Calls:

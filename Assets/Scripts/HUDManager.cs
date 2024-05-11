@@ -24,8 +24,6 @@ public class HUDManager : MonoBehaviour
             Destroy(gameObject);
         else
             DontDestroyOnLoad(gameObject);
-
-        StartCoroutine(Rotate());
     }
 
     public void Update()
@@ -42,23 +40,14 @@ public class HUDManager : MonoBehaviour
         }
     }
 
-    private IEnumerator Rotate()
-    {
-        float time = 0;
-        while (true)
-        {
-            time += Time.deltaTime;
-            for (int i = 0; i < skins.Length; i++)
-            {
-                skins[i].transform.rotation = Quaternion.Euler(0, 0, Mathf.Sin(time * 2) * 2);
-            }
-            yield return null;
-        }
-    }
-
     public void StartTimer()
     {
         StartCoroutine(Timer());
+    }
+
+    public void StopTimer()
+    {
+        StopAllCoroutines();
     }
 
     private IEnumerator Timer()

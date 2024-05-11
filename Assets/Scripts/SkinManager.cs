@@ -17,6 +17,7 @@ public class SkinManager : MonoBehaviour
 
     public int userSkin = 0;
     public int userHand = 1;
+    public int userHead = 0;
 
     private PlayersController playerController;
 
@@ -44,6 +45,8 @@ public class SkinManager : MonoBehaviour
         hudManager.face[playerController.playerID].color = new Color(1, 1, 1, 1);
         faceRenderer.sprite = faceSkins[randomFace];
 
+        userHead = randomFace;
+
         hudManager.lives[playerController.playerID].color = Color.green;
     }
 
@@ -59,28 +62,13 @@ public class SkinManager : MonoBehaviour
         foreach (PlayersController player in FindObjectsOfType<PlayersController>())
         {
             if (player.lives == 3)
-            {
                 hudManager.lives[player.playerID].color = Color.green;
-            }
             else if (player.lives == 2)
-            {
                 hudManager.lives[player.playerID].color = Color.yellow;
-            }
             else if (player.lives == 1)
-            {
                 hudManager.lives[player.playerID].color = Color.red;
-            }
             else
-            {
-                // Ne changez le visage que du joueur actuel
-                if (player == playerController)
-                {
-                    hudManager.face[player.playerID].sprite = faceSkins[9];
-                    faceRenderer.sprite = faceSkins[9];
-                }
-
                 hudManager.lives[player.playerID].color = Color.black;
-            }
         }
     }
 

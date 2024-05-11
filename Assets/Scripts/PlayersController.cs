@@ -2,22 +2,24 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
 using System.Collections;
-using Cinemachine;
-using UnityEngine.SceneManagement;
-using Unity.VisualScripting;
 
 public class PlayersController : MonoBehaviour
 {
     [Header("Player")]
     public int playerID = 0;
+    public int lives = 3;
+    public bool stunned = false;
+    public bool isDead = false;
+    public int wins = 0;
 
     [Header("Movement")]
     public float speed = 10f;
     public float jumpForce = 20f;
+
     public bool canJump = true;
+    public bool canMove = false;
 
     [Header("Hand")]
-    public GameObject hand;
     public float maxHandDistance = 1.5f;
     public float handSpeed = 10f;
 
@@ -25,10 +27,28 @@ public class PlayersController : MonoBehaviour
     public GameObject bullet;
     public GameObject muzzle;
     public GameObject explosion;
-    public bool stunned = false;
-    public int lives = 3;
+
     public float shootCooldown = 0.5f;
-    public float timeSinceLastShot = 0f;
+    private float timeSinceLastShot = 0f;
+
+    [Header("Dash/Hit")]
+    public bool dash = false;
+    public float dashTime = 0.5f;
+    public float dashCooldown = 2f;
+    private float timeSinceLastDash = 0f;
+
+    [Header("HUD")]
+    public Image skinHUD;
+
+    [Header("Visual")]
+    public GameObject hand;
+    public GameObject face;
+
+    [Header("Input")]
+    private Vector2 movement;
+    private Vector2 handInput;
+    public bool jumped = false;
+    public bool shooting = false;
 
     [Header("Components")]
     private Rigidbody2D rb;
@@ -38,29 +58,6 @@ public class PlayersController : MonoBehaviour
     private LayerMask groundLayer;
     private GameManager gameManager;
 
-    [Header("HUD")]
-    public Image skinHUD;
-    public float ShakeTime;
-
-    [Header("Other")]
-    public GameObject face;
-    public GameObject[] spawnPoint;
-    public bool alive = true;
-    public bool detected = false;
-    public bool canMove = true;
-    public bool canPunch = false;
-
-    [Header("Input")]
-    private Vector2 movement;
-    private Vector2 handInput;
-    private bool jumped = false;
-    private bool shooting = false;
-
-    private float slowfactor = 0.05f;
-    private float slowDuration = 0.02f;
-
-    private CinemachineVirtualCamera virtualCamera;
-
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -68,48 +65,30 @@ public class PlayersController : MonoBehaviour
         skins = GetComponent<SkinManager>();
         groundCheck = transform.Find("GroundCheck");
         groundLayer = LayerMask.GetMask("Ground");
-
-        virtualCamera = FindAnyObjectByType<CinemachineVirtualCamera>();
         gameManager = FindObjectOfType<GameManager>();
 
         DontDestroyOnLoad(gameObject);
-        DontDestroyOnLoad(virtualCamera);
-        DontDestroyOnLoad(Camera.main.gameObject);
-
-        canMove = true;
-        canPunch = false;
 
         name = "Player " + playerID;
     }
 
     void Update()
     {
-        NeverOutside();
-        Punch();
-
-        if (alive && canMove)
+        if (!stunned && canMove && !dash)
         {
             Movement();
             Jump();
             Hand();
 
             if (shooting)
-            {
                 Shoot();
-            }
-
-            if (ShakeTime > 0)
-            {
-                ShakeTime -= Time.deltaTime;
-                if (ShakeTime <= 0)
-                {
-                    CinemachineBasicMultiChannelPerlin noise = virtualCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
-                    noise.m_AmplitudeGain = 0;
-                }
-            }
-
-            LiveState(true);
         }
+
+        if (dash)
+            Punch();
+
+        if (!isDead)
+            Dead();
     }
 
     void Movement()
@@ -120,14 +99,10 @@ public class PlayersController : MonoBehaviour
     void Jump()
     {
         if (jumped && IsGrounded() && !stunned)
-        {
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
-        }
 
         if (movement.y > 0.95 && IsGrounded() && !stunned)
-        {
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
-        }
     }
 
     void Hand()
@@ -143,66 +118,47 @@ public class PlayersController : MonoBehaviour
 
         hand.transform.position = newPosition;
 
-        if (hand.transform.position.x < transform.position.x)
+        Vector3 directionToHand = hand.transform.position - transform.position;
+        float angle = Mathf.Atan2(directionToHand.y, directionToHand.x) * Mathf.Rad2Deg;
+
+        // if hand is on the right side of the player flip the player
+        if (hand.transform.position.x > transform.position.x)
         {
-            hand.transform.localScale = new Vector3(-1, 1, 1);
-            if (skins.userHand == 0)
-            {
-                float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-                hand.transform.rotation = Quaternion.Euler(0, 0, angle - 90);
-            }
-            else
-            {
-                float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-                hand.transform.rotation = Quaternion.Euler(0, 0, angle - 145);
-            }
+            hand.transform.localScale = new Vector3(1, 1, 1);
+            hand.transform.rotation = Quaternion.Euler(0, 0, angle - 35);
         }
         else
         {
-            hand.transform.localScale = new Vector3(1, 1, 1);
-
-            if (skins.userHand == 0)
-            {
-                float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-                hand.transform.rotation = Quaternion.Euler(0, 0, angle - 90);
-            }
-            else
-            {
-                float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-                hand.transform.rotation = Quaternion.Euler(0, 0, angle - 45);
-            }
+            hand.transform.localScale = new Vector3(-1, 1, 1);
+            hand.transform.rotation = Quaternion.Euler(0, 0, angle - 145);
         }
+
     }
 
     void Shoot()
     {
         if (Time.time - timeSinceLastShot > shootCooldown)
-        {
-            if(skins.userHand == 0)
+            if (skins.userHand == 1)
+                Shooting();
+
+
+        if (Time.time - timeSinceLastDash > dashCooldown)
+            if (skins.userHand == 0)
             {
                 Dash();
+                dash = true;
             }
-
-            if (skins.userHand == 1)
-            {
-                Shooting();
-            }
-        }
     }
 
     void Shooting()
     {
         GameObject newBullet = Instantiate(bullet, muzzle.transform.position, hand.transform.rotation);
         newBullet.GetComponent<Bullet>().shooter = this;
-
-        if(hand.transform.position.x < transform.position.x)
-        {
-            newBullet.transform.Rotate(0, 0, 145);
-        }
-        else
-        {
+        if (hand.transform.position.x > transform.position.x)
             newBullet.transform.Rotate(0, 0, 35);
-        }
+
+        else
+            newBullet.transform.Rotate(0, 0, 145);
 
         timeSinceLastShot = Time.time;
     }
@@ -214,27 +170,22 @@ public class PlayersController : MonoBehaviour
 
         rb.AddForce(-direction * 30, ForceMode2D.Impulse);
         trail.emitting = true;
-        canMove = false;
-        canPunch = true;
 
         StartCoroutine(StopDash());
-        timeSinceLastShot = Time.time;
+        timeSinceLastDash = Time.time;
     }
 
     void Punch()
     {
         Collider2D[] hits = Physics2D.OverlapCircleAll(hand.transform.position, 1f);
-        if (canPunch)
+        foreach (Collider2D hit in hits)
         {
-            foreach (Collider2D hit in hits)
+            if (hit.CompareTag("Player"))
             {
-                if (hit.CompareTag("Player"))
+                PlayersController player = hit.GetComponent<PlayersController>();
+                if (player.playerID != playerID)
                 {
-                    PlayersController player = hit.GetComponent<PlayersController>();
-                    if (player.playerID != playerID)
-                    {
-                        player.HitPlayer(1, 30, hand, player);
-                    }
+                    player.HitPlayer(1, 30, hand, player);
                 }
             }
         }
@@ -242,11 +193,10 @@ public class PlayersController : MonoBehaviour
 
     public IEnumerator StopDash()
     {
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(dashTime);
         rb.velocity = Vector2.zero;
         trail.emitting = false;
-        canMove = true;
-        canPunch = false;
+        dash = false;
     }
 
     public void HitPlayer(int degat, int force, GameObject target, PlayersController player)
@@ -258,7 +208,9 @@ public class PlayersController : MonoBehaviour
         direction.Normalize();
 
         StartCoroutine(player.Stun());
-        StartCoroutine(StunAndSlowMotion());
+
+        StartCoroutine(gameManager.StunAndSlowMotion());
+        gameManager.ShakeCamera(5f, .1f);
 
         if (player.stunned)
             rb.AddForce(new Vector2(-direction.x, 1) * force, ForceMode2D.Impulse);
@@ -271,73 +223,43 @@ public class PlayersController : MonoBehaviour
         if(lives <= 0)
         {
             Instantiate(explosion, transform.position, Quaternion.identity);
-            LiveState(false);
+            IsDead(true);
         }
     }
 
-    private void NeverOutside()
+    public void IsDead(bool state)
     {
-        Vector3 screenPos = Camera.main.WorldToScreenPoint(transform.position);
-
-        if (screenPos.x > Screen.width || screenPos.x < 0 || screenPos.y > Screen.height || screenPos.y < 0)
+        if(state)
         {
-            if (screenPos.x > Screen.width)
-                transform.position = new Vector2(-transform.position.x, transform.position.y);
-
-            if (screenPos.x < 0)
-                transform.position = new Vector2(-transform.position.x, transform.position.y);
-
-            trail.emitting = false;
-        }
-    }
-
-    public void LiveState(bool isAlive)
-    {
-        if(!isAlive)
-        {
-            gameManager.playersInGame--;
             skins.spriteRenderer.enabled = false;
             skins.faceRenderer.enabled = false;
             skins.handRenderers[0].enabled = false;
+
+            skins.hudManager.face[playerID].sprite = skins.faceSkins[skins.faceSkins.Length - 1];
+            skins.faceRenderer.sprite = skins.faceSkins[skins.faceSkins.Length - 1];
+
             GetComponent<BoxCollider2D>().enabled = false;
-            alive = false;
+
+            gameManager.playersDeath++;
+
+            canMove = false;
+            isDead = true;
         }
-        else if(!detected)
+        else
         {
-            gameManager.playersInGame++;
             skins.spriteRenderer.enabled = true;
             skins.faceRenderer.enabled = true;
             skins.handRenderers[0].enabled = true;
 
-            int randomFace = Random.Range(0, skins.faceSkins.Length - 1);
+            skins.hudManager.face[playerID].sprite = skins.faceSkins[skins.userHead];
+            skins.faceRenderer.sprite = skins.faceSkins[skins.userHead];
 
-            skins.hudManager.face[playerID].sprite = skins.faceSkins[randomFace];
-            skins.hudManager.face[playerID].color = new Color(1, 1, 1, 1);
-            skins.faceRenderer.sprite = skins.faceSkins[randomFace];
-
-            skins.hudManager.lives[playerID].color = Color.green;
+            lives = 3;
 
             GetComponent<BoxCollider2D>().enabled = true;
 
-            transform.position = new Vector2(0, 0);
-
-            alive = true;
-            detected = true;
+            isDead = false;
         }
-    }
-
-    IEnumerator StunAndSlowMotion()
-    {
-        Time.timeScale = slowfactor;
-        Time.fixedDeltaTime = Time.timeScale * 0.02f;
-
-        yield return new WaitForSeconds(slowDuration);
-
-        ShakeCamera(5f, .1f);
-        Time.timeScale = 1f;
-
-        yield return new WaitForSeconds(0.1f);
-        Dead();
     }
 
     public IEnumerator Stun()
@@ -354,13 +276,6 @@ public class PlayersController : MonoBehaviour
     bool IsGrounded()
     {
         return Physics2D.OverlapCircle(groundCheck.position, 0.1f, groundLayer);
-    }
-
-    void ShakeCamera(float intensity, float time)
-    {
-        CinemachineBasicMultiChannelPerlin noise = virtualCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
-        noise.m_AmplitudeGain = intensity;
-        ShakeTime = time;
     }
 
     public void OnMove(InputAction.CallbackContext context)
@@ -390,7 +305,7 @@ public class PlayersController : MonoBehaviour
     {
         shoulderName = context.control.name;
 
-        if (context.performed)
+        if (context.performed && !stunned && canMove && !dash)
         {
             Debug.Log(shoulderName);
 

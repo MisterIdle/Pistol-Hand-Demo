@@ -262,25 +262,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerID: 0
+  lives: 1
+  stunned: 0
+  isDead: 0
+  wins: 0
   speed: 10
   jumpForce: 20
   canJump: 1
-  hand: {fileID: 2804290217738970132}
+  canMove: 1
   maxHandDistance: 1.5
-  handSpeed: 5
+  handSpeed: 8
   bullet: {fileID: 3507916405556943939, guid: 42fa32a48c4a8fe4dba54148892625be, type: 3}
   muzzle: {fileID: 7710050152976292625}
   explosion: {fileID: 2264460792506307572, guid: e2f64259711d0f94db75a037e4270f0e, type: 3}
-  stunned: 0
-  lives: 1
   shootCooldown: 0.5
-  timeSinceLastShot: 0
-  ShakeTime: 0
+  dash: 0
+  dashTime: 0.5
+  dashCooldown: 2
+  hand: {fileID: 2804290217738970132}
   face: {fileID: 702232491239003212}
-  spawnPoint: []
-  alive: 1
-  detected: 0
-  canMove: 1
+  jumped: 0
+  shooting: 0
 --- !u!114 &5380616594145753213
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -295,20 +297,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   faceSkins:
   - {fileID: 21300000, guid: df585cfdb66b61e46ad6d49f70e33ad3, type: 3}
-  - {fileID: 21300000, guid: 92929717885aabd408c8d09c8f16ef84, type: 3}
   - {fileID: 21300000, guid: a7d8f03fa07ab494fac5ac102ac3f743, type: 3}
   - {fileID: 21300000, guid: 6f5e949b25ca5b14eb301e343f281560, type: 3}
   - {fileID: 21300000, guid: 468da3d45fa9a864d82bfffe45e92c25, type: 3}
   - {fileID: 21300000, guid: c049043ba5b5fc44c83749a176b2ec90, type: 3}
   - {fileID: 21300000, guid: af085fcb306038a4fa92f3cff82efd56, type: 3}
   - {fileID: 21300000, guid: 099fa44e81c6c0f40b55e4f313f72155, type: 3}
-  - {fileID: 21300000, guid: a39ecbf91826c294a88a1376b2d1c2fa, type: 3}
   - {fileID: 21300000, guid: 3903febcd1eb3fb4db13e2c748686c6b, type: 3}
   skinSets:
   - bodySkin: {fileID: 21300000, guid: 5c18e954ebc5d784192f702b4e3e153e, type: 3}
     handSkins:
     - {fileID: 21300000, guid: 6718ec81fc0789046b2ed11a47426143, type: 3}
     - {fileID: 21300000, guid: 60a0263e2ee12e4438f0b77be8f5d5fc, type: 3}
+  - bodySkin: {fileID: 21300000, guid: 2819b417d56679746b3a29dc79e1c1ad, type: 3}
+    handSkins:
+    - {fileID: 21300000, guid: 91ca9d470c1f0b84aa6a6c97f6d004a6, type: 3}
+    - {fileID: 21300000, guid: d1558050b875c32419ebd580d33d4f7c, type: 3}
   - bodySkin: {fileID: 21300000, guid: 198bd7b25b510724db7733ef89b2463d, type: 3}
     handSkins:
     - {fileID: 21300000, guid: 763ed97f53691a34bb6300db0852b41f, type: 3}
@@ -317,12 +321,9 @@ MonoBehaviour:
     handSkins:
     - {fileID: 21300000, guid: 93923c9d0927d2649ae6173f379c794f, type: 3}
     - {fileID: 21300000, guid: af3801af4502a7d47ad9a9b118beb25d, type: 3}
-  - bodySkin: {fileID: 21300000, guid: 2819b417d56679746b3a29dc79e1c1ad, type: 3}
-    handSkins:
-    - {fileID: 21300000, guid: 91ca9d470c1f0b84aa6a6c97f6d004a6, type: 3}
-    - {fileID: 21300000, guid: d1558050b875c32419ebd580d33d4f7c, type: 3}
   userSkin: 0
   userHand: 1
+  userHead: 0
   spriteRenderer: {fileID: 0}
   handRenderers: []
   faceRenderer: {fileID: 0}
@@ -576,7 +577,7 @@ Transform:
   m_GameObject: {fileID: 2804290217738970132}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.244, y: -0.57, z: 0}
+  m_LocalPosition: {x: 0.08, y: -0.746, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
