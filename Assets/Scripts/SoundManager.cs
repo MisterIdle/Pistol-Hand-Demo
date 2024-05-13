@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class SoundManager : MonoBehaviour
@@ -16,65 +17,89 @@ public class SoundManager : MonoBehaviour
     public AudioClip win;
     public AudioClip lastWin;
 
-    public AudioSource audioSource;
+    public AudioClip[] music;
 
-    private void Start()
+    public AudioSource sfxAudio;
+    public AudioSource musicAudio;
+
+    private bool isPlayingMusic;
+
+    void Start()
     {
-        audioSource = GetComponent<AudioSource>();
+        PlayRandomMusic();
+    }
+
+    public void PlayRandomMusic()
+    {
+        if (!isPlayingMusic)
+        {
+            int randomMusic = Random.Range(0, music.Length);
+            musicAudio.clip = music[randomMusic];
+            musicAudio.Play();
+            isPlayingMusic = true;
+            StartCoroutine(WaitForMusicEnd(music[randomMusic].length, randomMusic));
+        }
+    }
+
+    IEnumerator WaitForMusicEnd(float clipLength, int currentIndex)
+    {
+        yield return new WaitForSeconds(clipLength);
+        isPlayingMusic = false;
+        PlayRandomMusic();
     }
 
     public void PlayJump()
     {
-        audioSource.PlayOneShot(jump[Random.Range(0, jump.Length)]);
+        sfxAudio.PlayOneShot(jump[Random.Range(0, jump.Length)]);
     }
 
     public void PlayShoot()
     {
-        audioSource.PlayOneShot(shoot[Random.Range(0, shoot.Length)]);
+        sfxAudio.PlayOneShot(shoot[Random.Range(0, shoot.Length)]);
     }
 
     public void PlayPunch()
     {
-        audioSource.PlayOneShot(punch[Random.Range(0, punch.Length)]);
+        sfxAudio.PlayOneShot(punch[Random.Range(0, punch.Length)]);
     }
 
     public void PlayHit()
     {
-        audioSource.PlayOneShot(hit[Random.Range(0, hit.Length)]);
+        sfxAudio.PlayOneShot(hit[Random.Range(0, hit.Length)]);
     }
 
     public void PlayDie()
     {
-        audioSource.PlayOneShot(die[Random.Range(0, die.Length)]);
+        sfxAudio.PlayOneShot(die[Random.Range(0, die.Length)]);
     }
 
     public void PlayFirework()
     {
-        audioSource.PlayOneShot(firework[Random.Range(0, firework.Length)]);
+        sfxAudio.PlayOneShot(firework[Random.Range(0, firework.Length)]);
     }
 
     public void PlayThree()
     {
-        audioSource.PlayOneShot(three);
+        sfxAudio.PlayOneShot(three);
     }
 
     public void PlayTwo()
     {
-        audioSource.PlayOneShot(two);
+        sfxAudio.PlayOneShot(two);
     }
 
     public void PlayOne()
     {
-        audioSource.PlayOneShot(one);
+        sfxAudio.PlayOneShot(one);
     }
 
     public void PlayGo()
     {
-        audioSource.PlayOneShot(go);
+        sfxAudio.PlayOneShot(go);
     }
 
     public void PlayWin()
     {
-        audioSource.PlayOneShot(win);
+        sfxAudio.PlayOneShot(win);
     }
 }

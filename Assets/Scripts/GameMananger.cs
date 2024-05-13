@@ -79,6 +79,8 @@ public class GameManager : MonoBehaviour
         skinManager = FindObjectOfType<SkinManager>();
         soundManager = FindObjectOfType<SoundManager>();
 
+        soundManager.musicAudio.volume = 0.4f;
+
         if (player != null)
         {
             playersInGame = FindObjectsOfType<PlayersController>().Length;
@@ -93,6 +95,8 @@ public class GameManager : MonoBehaviour
     public void InLobby()
     {
         playersManager = FindObjectOfType<PlayersManager>();
+
+        soundManager.musicAudio.volume = 0.2f;
 
         if ((playersDeath == playersInGame - 1 && playersInGame != 1 && !inGame) || (playersInGame > 1 && playersDeath == playersInGame))
         {

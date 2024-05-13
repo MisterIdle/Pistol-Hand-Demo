@@ -1000,18 +1000,35 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72d24b71347429449b1f28db9dc49bb9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  shoot: []
-  punch: []
-  hit: []
-  die: []
-  firework: []
-  three: {fileID: 0}
-  two: {fileID: 0}
-  one: {fileID: 0}
-  go: {fileID: 0}
-  win: {fileID: 0}
-  lastWin: {fileID: 0}
-  audioSource: {fileID: 0}
+  jump:
+  - {fileID: 8300000, guid: 1385d0d2a57a3d84885fd34c11e8fdd1, type: 3}
+  - {fileID: 8300000, guid: 464e34595e6389e42b2f8278ead71be9, type: 3}
+  - {fileID: 8300000, guid: fcef10c365dca3648bc7357cc22c312a, type: 3}
+  shoot:
+  - {fileID: 8300000, guid: dd944022f6345f7478c1da8feb4fc510, type: 3}
+  - {fileID: 8300000, guid: 8113e7c247a07034fac8394a3ff25fa0, type: 3}
+  - {fileID: 8300000, guid: f6f180d127ac97a4daa171821ccc02b6, type: 3}
+  - {fileID: 8300000, guid: 7493a0c4d10fd5748bc5e87991f81001, type: 3}
+  punch:
+  - {fileID: 8300000, guid: 1ebeaaa5801cfad4db94521ddb1c0e7d, type: 3}
+  - {fileID: 8300000, guid: e2fe8ab5dbffe594c94892f359bf3135, type: 3}
+  - {fileID: 8300000, guid: 32e34e3c2835ece4c923ac9db759b995, type: 3}
+  hit:
+  - {fileID: 8300000, guid: 789ce5ab4ba5b2f4891626a8005d60ca, type: 3}
+  die:
+  - {fileID: 8300000, guid: 5ba8d0743d648c740a5f49dcee46d99a, type: 3}
+  firework:
+  - {fileID: 8300000, guid: cc95474338f83c74486975de6bbfe89f, type: 3}
+  - {fileID: 8300000, guid: 855431e301df25b489bb99df6c8d2142, type: 3}
+  - {fileID: 8300000, guid: 7716694904c0de545b41b73044e7f947, type: 3}
+  three: {fileID: 8300000, guid: ddd2322505e6f3b4ebed3ced2f1a8f4e, type: 3}
+  two: {fileID: 8300000, guid: 74bc819d07cd5984b9a453a792d0aea2, type: 3}
+  one: {fileID: 8300000, guid: bb7e13b1f682fa94f9212a91fbda6db0, type: 3}
+  go: {fileID: 8300000, guid: 39a78ec597298ee4183c21c9bfdd70ac, type: 3}
+  win: {fileID: 8300000, guid: f1a0de44d0cecc549b147ab236c10e1e, type: 3}
+  lastWin: {fileID: 8300000, guid: f1a0de44d0cecc549b147ab236c10e1e, type: 3}
+  sfx: {fileID: 0}
+  music: []
 --- !u!82 &519420037
 AudioSource:
   m_ObjectHideFlags: 0
@@ -2050,7 +2067,6 @@ GameObject:
   m_Component:
   - component: {fileID: 935978592}
   - component: {fileID: 935978591}
-  - component: {fileID: 935978593}
   m_Layer: 0
   m_Name: Grid
   m_TagString: Untagged
@@ -2086,18 +2102,6 @@ Transform:
   - {fileID: 1068120218}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &935978593
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 935978590}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 304e35a4424705d4a98d0fd140a7b8ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &995124064
 GameObject:
   m_ObjectHideFlags: 0
@@ -3409,6 +3413,7 @@ MonoBehaviour:
   hudManager: {fileID: 0}
   skinManager: {fileID: 0}
   firework: {fileID: 2221709070385065789, guid: 59c9188f4615ef840ba94cb82cef1981, type: 3}
+  soundManager: {fileID: 0}
   slowfactor: 0.05
   slowDuration: 0.02
   shakeTime: 0
