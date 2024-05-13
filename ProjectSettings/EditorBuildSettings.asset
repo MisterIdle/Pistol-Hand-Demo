@@ -44,4 +44,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Cat.unity
     guid: 1f955792f0b900c41b2668d8600ff112
+  - enabled: 1
+    path: Assets/Scenes/Podium.unity
+    guid: 19d51d14b6926d149a2b0746a11c65d6
   m_configObjects: {}

@@ -22,7 +22,7 @@ public class Bullet : MonoBehaviour
 
             if (players != shooter)
             {
-                players.HitPlayer(damage, 20, gameObject, players);
+                players.HitPlayer(damage, 15, gameObject, players, true);
                 Destroy(gameObject);
             } 
         }

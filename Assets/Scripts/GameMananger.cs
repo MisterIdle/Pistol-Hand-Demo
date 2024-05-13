@@ -1,5 +1,6 @@
 using Cinemachine;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -137,12 +138,22 @@ public class GameManager : MonoBehaviour
         MoveCameraTransition(true, 0.5f);
         map = false;
 
+        List<int> randomMapTaken = new List<int>();
+
         yield return new WaitForSeconds(1f);
 
         if (!map)
         {
             randomArena = Random.Range(1, SceneManager.sceneCountInBuildSettings);
+
+            while (randomMapTaken.Contains(randomArena))
+            {
+                randomArena = Random.Range(1, SceneManager.sceneCountInBuildSettings);
+            }
+
+            randomMapTaken.Add(randomArena);
             LoadScene(randomArena);
+
             map = true;
         }
 
@@ -151,6 +162,8 @@ public class GameManager : MonoBehaviour
         virtualCamera.m_Lens.OrthographicSize = 14;
 
         spawnPoints = GameObject.FindGameObjectsWithTag("Spawn");
+
+        List<int> randomPosTaken = new List<int>();
 
         foreach (PlayersController player in FindObjectsOfType<PlayersController>())
         {
@@ -161,7 +174,15 @@ public class GameManager : MonoBehaviour
 
             player.IsDead(false);
             player.lifes = 3;
+
             int randomPos = Random.Range(0, spawnPoints.Length);
+            while (randomPosTaken.Contains(randomPos))
+            {
+                randomPos = Random.Range(0, spawnPoints.Length);
+            }
+
+            randomPosTaken.Add(randomPos);
+
             player.transform.position = spawnPoints[randomPos].transform.position;
         }
 
@@ -207,10 +228,11 @@ public class GameManager : MonoBehaviour
         hudManager.count.text = "1";
         soundManager.PlayOne();
 
-        inGame = true;
         yield return new WaitForSeconds(0.5f);
-        hudManager.count.text = "Good Luck!";
+        hudManager.count.text = "";
         soundManager.PlayGo();
+
+        inGame = true;
 
         hudManager.StartTimer();
         
@@ -218,9 +240,6 @@ public class GameManager : MonoBehaviour
         {
             player.canMove = true;
         }
-        
-        yield return new WaitForSeconds(1f);
-        hudManager.count.text = "";
     }
 
     void RoundEndStop()
@@ -235,37 +254,36 @@ public class GameManager : MonoBehaviour
 
             if (!player.isDead && !draw)
             {
-                if (player.playerID == 0)
+                switch (player.playerID)
                 {
-                    hudManager.count.text = "Blue";
-                    hudManager.whoWins.text = "Wins";
-                    hudManager.count.color = Color.blue;
-                    hudManager.whoWins.color = Color.white;
-                    player.crown.enabled = true;
-                }
-                else if (player.playerID == 1)
-                {
-                    hudManager.count.text = "Red";
-                    hudManager.whoWins.text = "Wins";
-                    hudManager.count.color = Color.red;
-                    hudManager.whoWins.color = Color.white;
-                    player.crown.enabled = true;
-                }
-                else if (player.playerID == 2)
-                {
-                    hudManager.count.text = "Green";
-                    hudManager.whoWins.text = "Wins";
-                    hudManager.count.color = Color.green;
-                    hudManager.whoWins.color = Color.white;
-                    player.crown.enabled = true;
-                }
-                else if (player.playerID == 3)
-                {
-                    hudManager.count.text = "Yellow";
-                    hudManager.whoWins.text = "Wins";
-                    hudManager.count.color = Color.yellow;
-                    hudManager.whoWins.color = Color.white;
-                    player.crown.enabled = true;
+                    case 0:
+                        hudManager.count.text = "Blue";
+                        hudManager.whoWins.text = "Wins";
+                        hudManager.count.color = Color.blue;
+                        hudManager.whoWins.color = Color.white;
+                        player.crown.enabled = true;
+                        break;
+                    case 1:
+                        hudManager.count.text = "Red";
+                        hudManager.whoWins.text = "Wins";
+                        hudManager.count.color = Color.red;
+                        hudManager.whoWins.color = Color.white;
+                        player.crown.enabled = true;
+                        break;
+                    case 2:
+                        hudManager.count.text = "Green";
+                        hudManager.whoWins.text = "Wins";
+                        hudManager.count.color = Color.green;
+                        hudManager.whoWins.color = Color.white;
+                        player.crown.enabled = true;
+                        break;
+                    case 3:
+                        hudManager.count.text = "Yellow";
+                        hudManager.whoWins.text = "Wins";
+                        hudManager.count.color = Color.yellow;
+                        hudManager.whoWins.color = Color.white;
+                        player.crown.enabled = true;
+                        break;
                 }
 
                 soundManager.PlayWin();
@@ -299,37 +317,32 @@ public class GameManager : MonoBehaviour
 
             if (player.wins == needToWin)
             {
-                if (player.playerID == 0)
+                switch (player.playerID)
                 {
-                    hudManager.count.text = "Winner";
-                    hudManager.whoWins.text = "Blue";
-
-                    hudManager.whoWins.color = Color.blue;
-                    hudManager.count.color = Color.white;
-                }
-                else if(player.playerID == 1)
-                {
-                    hudManager.count.text = "Winner";
-                    hudManager.whoWins.text = "Red";
-
-                    hudManager.whoWins.color = Color.red;
-                    hudManager.count.color = Color.white;
-                }
-                else if (player.playerID == 2)
-                {
-                    hudManager.count.text = "Winner";
-                    hudManager.whoWins.text = "Green";
-
-                    hudManager.whoWins.color = Color.green;
-                    hudManager.count.color = Color.white;
-                }
-                else if (player.playerID == 3)
-                {
-                    hudManager.count.text = "Winner";
-                    hudManager.whoWins.text = "Yellow";
-
-                    hudManager.whoWins.color = Color.yellow;
-                    hudManager.count.color = Color.white;
+                    case 0:
+                        hudManager.count.text = "Winner";
+                        hudManager.whoWins.text = "Blue";
+                        hudManager.whoWins.color = Color.blue;
+                        hudManager.count.color = Color.white;
+                        break;
+                    case 1:
+                        hudManager.count.text = "Winner";
+                        hudManager.whoWins.text = "Red";
+                        hudManager.whoWins.color = Color.red;
+                        hudManager.count.color = Color.white;
+                        break;
+                    case 2:
+                        hudManager.count.text = "Winner";
+                        hudManager.whoWins.text = "Green";
+                        hudManager.whoWins.color = Color.green;
+                        hudManager.count.color = Color.white;
+                        break;
+                    case 3:
+                        hudManager.count.text = "Winner";
+                        hudManager.whoWins.text = "Yellow";
+                        hudManager.whoWins.color = Color.yellow;
+                        hudManager.count.color = Color.white;
+                        break;
                 }
             }
         }
@@ -356,7 +369,7 @@ public class GameManager : MonoBehaviour
     {
         for (int i = 0; i < 10; i++)
         {
-            Vector3 position = new Vector3(Random.Range(-10, 10), Random.Range(-5, 5), 0);
+            Vector3 position = new Vector3(Random.Range(-20, 20), Random.Range(-5, 5), 0);
             Instantiate(firework, position, Quaternion.identity);
             soundManager.PlayFirework();
             yield return new WaitForSeconds(0.5f);

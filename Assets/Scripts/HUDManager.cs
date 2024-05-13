@@ -8,6 +8,7 @@ public class HUDManager : MonoBehaviour
     public Image[] skins;
     public Image[] face;
     public Image[] lives;
+    public Image[] crown;
     public Image[] inputs;
     public Image backother;
 

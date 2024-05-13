@@ -16,7 +16,7 @@ public class PlayersController : MonoBehaviour
     public float speed = 10f;
     public float jumpForce = 20f;
 
-    public bool canJump = true;
+    public bool canJump = false;
     public bool canMove = false;
 
     [Header("Hand")]
@@ -36,7 +36,7 @@ public class PlayersController : MonoBehaviour
     public float dashTime = 0.5f;
     public float dashCooldown = 2f;
     private float timeSinceLastDash = 0f;
-    public int hitedForce = 10;
+    public int hitedForce = 20;
 
     [Header("HUD")]
     public Image skinHUD;
@@ -70,12 +70,11 @@ public class PlayersController : MonoBehaviour
         groundLayer = LayerMask.GetMask("Ground");
         gameManager = FindObjectOfType<GameManager>();
         soundManager = FindObjectOfType<SoundManager>();
+        
+        crown.enabled = false;
+        crown.color = new Color(1, 1, 1);
 
         DontDestroyOnLoad(gameObject);
-
-        crown.enabled = false;
-        crown.color = new Color(0.5f, 0.3f, 0.1f);
-
         name = "Player " + playerID;
     }
 
@@ -83,12 +82,12 @@ public class PlayersController : MonoBehaviour
     {
         ColoredCrown();
         LimitedZone();
+        Hand();
 
         if (!stunned && canMove && !dash)
         {
             Movement();
             Jump();
-            Hand();
 
             if (shooting)
                 Shoot();
@@ -108,11 +107,14 @@ public class PlayersController : MonoBehaviour
 
     void Jump()
     {
-        if (jumped && IsGrounded() && !stunned)
+        if (jumped && canJump && !stunned)
+        {
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+            canJump = false;
+        }
 
-        if (movement.y > 0.95 && IsGrounded() && !stunned)
-            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+        if(IsGrounded())
+            canJump = true;
     }
 
     void Hand()
@@ -163,9 +165,9 @@ public class PlayersController : MonoBehaviour
     {
         GameObject newBullet = Instantiate(bullet, muzzle.transform.position, hand.transform.rotation);
         newBullet.GetComponent<Bullet>().shooter = this;
+
         if (hand.transform.position.x > transform.position.x)
             newBullet.transform.Rotate(0, 0, 35);
-
         else
             newBullet.transform.Rotate(0, 0, 145);
 
@@ -182,7 +184,7 @@ public class PlayersController : MonoBehaviour
         direction.Normalize();
 
         rb.velocity = Vector2.zero;
-        rb.AddForce(-direction * 25, ForceMode2D.Impulse);
+        rb.AddForce(-direction * 35, ForceMode2D.Impulse);
 
         trail.emitting = true;
 
@@ -201,7 +203,7 @@ public class PlayersController : MonoBehaviour
                 PlayersController player = hit.GetComponent<PlayersController>();
                 if (player.playerID != playerID)
                 {
-                    player.HitPlayer(1, hitedForce, hand, player);
+                    player.HitPlayer(1, hitedForce, hand, player, false);
                 }
             }
         }
@@ -215,7 +217,7 @@ public class PlayersController : MonoBehaviour
         dash = false;
     }
 
-    public void HitPlayer(int degat, int force, GameObject target, PlayersController player)
+    public void HitPlayer(int degat, int force, GameObject target, PlayersController player, bool pistol)
     {
         if (player.stunned)
             return;
@@ -230,8 +232,10 @@ public class PlayersController : MonoBehaviour
 
         soundManager.PlayPunch();
 
-        if (player.stunned)
-            rb.AddForce(new Vector2(-direction.x, 1.5f) * force, ForceMode2D.Impulse);
+        if (player.stunned && pistol)
+            rb.AddForce(new Vector2(direction.x, 1f) * force, ForceMode2D.Impulse);
+        else if (player.stunned && !pistol)
+            rb.AddForce(new Vector2(-direction.x, 0.5f) * force, ForceMode2D.Impulse);
 
         player.lifes -= degat;
     }
@@ -275,8 +279,8 @@ public class PlayersController : MonoBehaviour
             skins.faceRenderer.enabled = false;
             skins.handRenderers[0].enabled = false;
 
-            skins.hudManager.face[playerID].sprite = skins.faceSkins[skins.faceSkins.Length - 1];
-            skins.faceRenderer.sprite = skins.faceSkins[skins.faceSkins.Length - 1];
+            skins.hudManager.face[playerID].sprite = skins.faceSkins[skins.faceSkins.Length - 2];
+            skins.faceRenderer.sprite = skins.faceSkins[skins.faceSkins.Length - 2];
 
             gameManager.playersDeath++;
 
@@ -323,25 +327,55 @@ public class PlayersController : MonoBehaviour
 
     public void ColoredCrown()
     {
-        if (wins == 1)
-            crown.color = new Color(1, 1, 1);
-
-        else if (wins == 2)
-            crown.color = new Color(0.8f, 0.5f, 0.2f);
-
-        else if (wins == 3)
-            crown.color = new Color(0.8f, 0.8f, 0.8f);
-
-        else if (wins == 4)
-            crown.color = new Color(1, 0.8f, 0);
-
-        else if (wins == 5)
-            crown.color = new Color(0, 0.8f, 1);
+        switch (wins)
+        {
+            case 0:
+                crown.color = new Color(1, 1, 1);
+                skins.hudManager.crown[playerID].enabled = false;
+                skins.hudManager.crown[playerID].color = new Color(1, 1, 1);
+                break;
+            case 1:
+                // Bronze
+                crown.color = new Color(0.8f, 0.5f, 0.2f);
+                skins.hudManager.crown[playerID].enabled = true;
+                skins.hudManager.crown[playerID].color = new Color(0.8f, 0.5f, 0.2f);
+                break;
+            case 2:
+                // Silver
+                crown.color = new Color(0.8f, 0.8f, 0.8f);
+                skins.hudManager.crown[playerID].enabled = true;
+                skins.hudManager.crown[playerID].color = new Color(0.8f, 0.8f, 0.8f);
+                break;
+            case 3:
+                // Gold
+                crown.color = new Color(1, 0.8f, 0);
+                skins.hudManager.crown[playerID].enabled = true;
+                skins.hudManager.crown[playerID].color = new Color(1, 0.8f, 0);
+                break;
+            case 4:
+                // Diamond color
+                crown.color = new Color(0.2f, 0.8f, 0.8f);
+                skins.hudManager.crown[playerID].enabled = true;
+                skins.hudManager.crown[playerID].color = new Color(0.2f, 0.8f, 0.8f);
+                break;
+            case 5:
+                // Ruby
+                crown.color = new Color(0.8f, 0.2f, 0.2f);
+                skins.hudManager.crown[playerID].enabled = true;
+                skins.hudManager.crown[playerID].color = new Color(0.8f, 0.2f, 0.2f);
+                break;
+        }
     }
 
     bool IsGrounded()
     {
-        return Physics2D.OverlapCircle(groundCheck.position, 0.1f, groundLayer);
+        // Si il marche sur le sol ou sur un autre joueur
+        Collider2D hit = Physics2D.OverlapCircle(groundCheck.position, 0.1f, groundLayer);
+        
+        if (hit != null)
+            return true;
+        return false;
+
     }
 
     public void OnMove(InputAction.CallbackContext context)

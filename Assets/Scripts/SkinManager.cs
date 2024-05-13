@@ -58,14 +58,21 @@ public class SkinManager : MonoBehaviour
     {
         foreach (PlayersController player in FindObjectsOfType<PlayersController>())
         {
-            if (player.lifes == 3)
-                hudManager.lives[player.playerID].color = Color.green;
-            else if (player.lifes == 2)
-                hudManager.lives[player.playerID].color = Color.yellow;
-            else if (player.lifes == 1)
-                hudManager.lives[player.playerID].color = Color.red;
-            else
-                hudManager.lives[player.playerID].color = Color.black;
+            switch (player.lifes)
+            {
+                case 3:
+                    hudManager.lives[player.playerID].color = Color.green;
+                    break;
+                case 2:
+                    hudManager.lives[player.playerID].color = Color.yellow;
+                    break;
+                case 1:
+                    hudManager.lives[player.playerID].color = Color.red;
+                    break;
+                case 0:
+                    hudManager.lives[player.playerID].color = Color.black;
+                    break;
+            }
         }
     }
 

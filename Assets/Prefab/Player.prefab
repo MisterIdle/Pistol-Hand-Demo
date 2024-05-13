@@ -271,8 +271,8 @@ MonoBehaviour:
   jumpForce: 22
   canJump: 1
   canMove: 1
-  maxHandDistance: 1.5
-  handSpeed: 8
+  maxHandDistance: 1.3
+  handSpeed: 10
   bullet: {fileID: 3507916405556943939, guid: 42fa32a48c4a8fe4dba54148892625be, type: 3}
   muzzle: {fileID: 7710050152976292625}
   explosion: {fileID: 2264460792506307572, guid: e2f64259711d0f94db75a037e4270f0e, type: 3}
@@ -280,7 +280,7 @@ MonoBehaviour:
   dash: 0
   dashTime: 0.3
   dashCooldown: 1
-  hitedForce: 15
+  hitedForce: 40
   hand: {fileID: 2804290217738970132}
   face: {fileID: 702232491239003212}
   crown: {fileID: 2890420676051575244}
@@ -735,7 +735,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5722906473969379226}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: GroundCheck
   m_TagString: Untagged
   m_Icon: {fileID: 0}
