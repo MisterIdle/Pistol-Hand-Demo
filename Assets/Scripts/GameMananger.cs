@@ -1,6 +1,5 @@
 using Cinemachine;
 using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -11,10 +10,14 @@ public class GameManager : MonoBehaviour
     public Image transition;
 
     [Header("Components")]
-    private CinemachineVirtualCamera virtualCamera;
+    public CinemachineVirtualCamera virtualCamera;
+    public Camera mainCamera;
     public PlayersController player;
+    public PlayersManager playersManager;
     public HUDManager hudManager;
     public SkinManager skinManager;
+    public Firework firework;
+    public SoundManager soundManager;
 
     [Header("Hit")]
     public float slowfactor = 0.05f;
@@ -29,29 +32,28 @@ public class GameManager : MonoBehaviour
     public int needToWin = 3;
 
     public GameObject[] spawnPoints;
+    public GameObject[] treePoints;
 
     [Header("Status")]
     public bool inGame = false;
     public bool inLobby = true;
     public bool draw = false;
     public bool map = true;
+    public bool playersReady = false;
 
     void Start()
     {
         virtualCamera = FindAnyObjectByType<CinemachineVirtualCamera>();
 
         DontDestroyOnLoad(gameObject);
-        DontDestroyOnLoad(virtualCamera);
-        DontDestroyOnLoad(Camera.main);
+        DontDestroyOnLoad(virtualCamera.gameObject);
+        DontDestroyOnLoad(Camera.main.gameObject);
 
         hudManager = FindObjectOfType<HUDManager>();
 
-        virtualCamera.name = "Logic Camera";
-        Camera.main.name = "Effect Camera";
+        hudManager.backother.gameObject.SetActive(false);
 
         StartCoroutine(Rotate());
-
-        spawnPoints = GameObject.FindGameObjectsWithTag("Spawn");
 
         FadeOut(0.5f);
     }
@@ -69,19 +71,13 @@ public class GameManager : MonoBehaviour
                 noise.m_AmplitudeGain = 0;
             }
         }
-
-        Camera[] allCameras = FindObjectsOfType<Camera>();
-        foreach (Camera cam in allCameras)
-        {
-            if (cam.name == "Main Camera")
-                Destroy(cam.gameObject);
-        }
     }
 
     public void InGame()
     {
         player = FindObjectOfType<PlayersController>();
         skinManager = FindObjectOfType<SkinManager>();
+        soundManager = FindObjectOfType<SoundManager>();
 
         if (player != null)
         {
@@ -96,7 +92,9 @@ public class GameManager : MonoBehaviour
 
     public void InLobby()
     {
-        if(playersDeath == playersInGame - 1 && !inGame && playersInGame != 1)
+        playersManager = FindObjectOfType<PlayersManager>();
+
+        if ((playersDeath == playersInGame - 1 && playersInGame != 1 && !inGame) || (playersInGame > 1 && playersDeath == playersInGame))
         {
             if (inLobby)
             {
@@ -122,7 +120,7 @@ public class GameManager : MonoBehaviour
             {
                 Debug.Log("Reload Round");
                 inGame = false;
-                StartCoroutine(RoundEndStop());
+                RoundEndStop();
             }
         }
 
@@ -162,6 +160,8 @@ public class GameManager : MonoBehaviour
 
         yield return new WaitForSeconds(0.2f);
 
+        hudManager.backother.gameObject.SetActive(false);
+
         hudManager.count.color = Color.white;
         hudManager.count.text = "";
 
@@ -174,7 +174,7 @@ public class GameManager : MonoBehaviour
         StartCoroutine(StartNewRound());
     }
 
-    public IEnumerator StartNewRound()
+    IEnumerator StartNewRound()
     {
         yield return new WaitForSeconds(0.5f);
 
@@ -187,16 +187,23 @@ public class GameManager : MonoBehaviour
         
         round++;
         playersDeath = 0;
-        
+
         hudManager.round.text = "Round: " + round;
         hudManager.count.text = "3";
+        soundManager.PlayThree();
+
         yield return new WaitForSeconds(0.5f);
         hudManager.count.text = "2";
+        soundManager.PlayTwo();
+
         yield return new WaitForSeconds(0.5f);
         hudManager.count.text = "1";
+        soundManager.PlayOne();
+
         inGame = true;
         yield return new WaitForSeconds(0.5f);
         hudManager.count.text = "Good Luck!";
+        soundManager.PlayGo();
 
         hudManager.StartTimer();
         
@@ -209,7 +216,7 @@ public class GameManager : MonoBehaviour
         hudManager.count.text = "";
     }
 
-    IEnumerator RoundEndStop()
+    void RoundEndStop()
     {
         hudManager.StopTimer();
 
@@ -217,12 +224,7 @@ public class GameManager : MonoBehaviour
         {
             player.crown.enabled = false;
 
-            if(playersDeath == playersInGame)
-            {
-                draw = true;
-            }
-
-            yield return new WaitForSeconds(0.2f);
+            hudManager.backother.gameObject.SetActive(true);
 
             if (!player.isDead && !draw)
             {
@@ -259,6 +261,8 @@ public class GameManager : MonoBehaviour
                     player.crown.enabled = true;
                 }
 
+                soundManager.PlayWin();
+
                 player.wins++;
 
                 draw = false;
@@ -267,18 +271,6 @@ public class GameManager : MonoBehaviour
                     StartCoroutine(StartFinishGame());
                 else
                     StartCoroutine(LoadRandomArena());
-            }
-            else if (draw)
-            {
-                hudManager.count.text = "Draw";
-                hudManager.whoWins.text = "No one wins";
-                hudManager.count.color = Color.white;
-                hudManager.whoWins.color = Color.white;
-
-                yield return new WaitForSeconds(2f);
-                draw = false;
-
-                StartCoroutine(LoadRandomArena());
             }
         }
     }
@@ -293,6 +285,10 @@ public class GameManager : MonoBehaviour
         {
             hudManager.count.fontSize = 70;
             hudManager.whoWins.fontSize = 100;
+
+            StartCoroutine(SpawnFirework());
+
+            hudManager.backother.gameObject.SetActive(true);
 
             if (player.wins == needToWin)
             {
@@ -331,12 +327,16 @@ public class GameManager : MonoBehaviour
             }
         }
 
+        soundManager.PlayWin();
+
         playersDeath = 0;
         round = 0;
 
         yield return new WaitForSeconds(5f);
         hudManager.count.text = "";
         hudManager.whoWins.text = "";
+
+        hudManager.backother.gameObject.SetActive(false);
 
         hudManager.count.fontSize = 100;
         hudManager.whoWins.fontSize = 50;
@@ -345,33 +345,45 @@ public class GameManager : MonoBehaviour
         StartCoroutine(ReturnToLobby());
     }
 
+    IEnumerator SpawnFirework()
+    {
+        for (int i = 0; i < 10; i++)
+        {
+            Vector3 position = new Vector3(Random.Range(-10, 10), Random.Range(-5, 5), 0);
+            Instantiate(firework, position, Quaternion.identity);
+            soundManager.PlayFirework();
+            yield return new WaitForSeconds(0.5f);
+        }
+    }
+
     IEnumerator ReturnToLobby()
     {
         FadeIn(1f);
 
-        yield return new WaitForSeconds(1.5f);
+        yield return new WaitForSeconds(1f);
 
-        LoadScene(0);
+        playersReady = false;
+
+        if (!playersReady)
+        {
+            foreach (PlayersController playersController in FindObjectsOfType<PlayersController>())
+            {
+                skinManager.userSkin = -1;
+                skinManager.hudManager.skins[playersController.playerID].sprite = skinManager.noPlayer;
+                skinManager.hudManager.face[playersController.playerID].sprite = skinManager.faceSkins[8];
+                skinManager.hudManager.lives[playersController.playerID].color = Color.white;
+
+                playersController.playerID = 0;
+
+                Destroy(playersController.gameObject);
+            }
+
+            playersReady = true;
+        }
 
         yield return new WaitForSeconds(0.5f);
 
-        spawnPoints = null;
-        yield return new WaitForSeconds(0.1f);
-        spawnPoints = GameObject.FindGameObjectsWithTag("Spawn");
-
-        foreach (PlayersController player in FindObjectsOfType<PlayersController>())
-        {
-            player.IsDead(true);
-
-            yield return new WaitForSeconds(0.1f);
-
-            player.IsDead(false);
-
-            player.wins = 0;
-            player.lifes = 1;
-
-            player.transform.position = spawnPoints[player.playerID].transform.position;
-        }
+        LoadScene(0);
 
         inLobby = true;
 
@@ -382,14 +394,9 @@ public class GameManager : MonoBehaviour
 
         StartCoroutine(Rotate());
 
+        yield return new WaitForSeconds(0.5f);
+
         FadeOut(1.5f);
-
-        yield return new WaitForSeconds(1f);
-
-        foreach (PlayersController player in FindObjectsOfType<PlayersController>())
-        {
-            player.canMove = true;
-        }
     }
 
     private void LoadScene(int index)
@@ -412,7 +419,7 @@ public class GameManager : MonoBehaviour
     public void MoveCameraTransition(bool moveUp, float time)
     {
         int direction = moveUp ? 1 : -1;
-        Vector3 targetPosition = virtualCamera.transform.position + new Vector3(0, direction * 50, -50);
+        Vector3 targetPosition = virtualCamera.transform.position + new Vector3(0, direction * 50, 0);
         StartCoroutine(LerpCameraPosition(targetPosition, time));
     }
 

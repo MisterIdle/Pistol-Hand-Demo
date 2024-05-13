@@ -9,6 +9,7 @@ public struct SkinSet
 
 public class SkinManager : MonoBehaviour
 {
+    public Sprite noPlayer;
     public Sprite[] faceSkins;
     public SkinSet[] skinSets;
 
@@ -36,10 +37,9 @@ public class SkinManager : MonoBehaviour
         userSkin = playerController.playerID;
         hudManager.skins[playerController.playerID].sprite = SetSkinHUD(userSkin);
 
-        int randomFace = Random.Range(0, faceSkins.Length - 1);
+        int randomFace = Random.Range(0, faceSkins.Length - 2);
 
         hudManager.face[playerController.playerID].sprite = faceSkins[randomFace];
-        hudManager.face[playerController.playerID].color = new Color(1, 1, 1, 1);
         faceRenderer.sprite = faceSkins[randomFace];
 
         userHead = randomFace;

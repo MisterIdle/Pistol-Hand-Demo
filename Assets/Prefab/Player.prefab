@@ -268,7 +268,7 @@ MonoBehaviour:
   isDead: 0
   wins: 0
   speed: 10
-  jumpForce: 20
+  jumpForce: 22
   canJump: 1
   canMove: 1
   maxHandDistance: 1.5
@@ -297,6 +297,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ced99b9411179f4f9c2d62e6d5f01ec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  noPlayer: {fileID: 21300000, guid: ae4ccf1e69da3d243bec4f3f1cfcba2f, type: 3}
   faceSkins:
   - {fileID: 21300000, guid: df585cfdb66b61e46ad6d49f70e33ad3, type: 3}
   - {fileID: 21300000, guid: a7d8f03fa07ab494fac5ac102ac3f743, type: 3}
@@ -306,6 +307,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: af085fcb306038a4fa92f3cff82efd56, type: 3}
   - {fileID: 21300000, guid: 099fa44e81c6c0f40b55e4f313f72155, type: 3}
   - {fileID: 21300000, guid: 3903febcd1eb3fb4db13e2c748686c6b, type: 3}
+  - {fileID: 21300000, guid: 119bcf4d9dbfaa94bbbd0a706f1058f9, type: 3}
   skinSets:
   - bodySkin: {fileID: 21300000, guid: 5c18e954ebc5d784192f702b4e3e153e, type: 3}
     handSkins:

@@ -44,6 +44,7 @@ public class PlayersController : MonoBehaviour
     public GameObject hand;
     public GameObject face;
     public SpriteRenderer crown;
+    public SoundManager soundManager;
 
     [Header("Input")]
     private Vector2 movement;
@@ -67,6 +68,7 @@ public class PlayersController : MonoBehaviour
         groundCheck = transform.Find("GroundCheck");
         groundLayer = LayerMask.GetMask("Ground");
         gameManager = FindObjectOfType<GameManager>();
+        soundManager = FindObjectOfType<SoundManager>();
 
         DontDestroyOnLoad(gameObject);
 
@@ -76,7 +78,7 @@ public class PlayersController : MonoBehaviour
         name = "Player " + playerID;
     }
 
-    void Update()
+    void FixedUpdate()
     {
         ColoredCrown();
         LimitedZone();
@@ -166,11 +168,15 @@ public class PlayersController : MonoBehaviour
         else
             newBullet.transform.Rotate(0, 0, 145);
 
+        soundManager.PlayShoot();
+
         timeSinceLastShot = Time.time;
     }
 
     void Dash()
     {
+        soundManager.PlayJump();
+
         Vector2 direction = transform.position - hand.transform.position;
         direction.Normalize();
 
@@ -178,6 +184,7 @@ public class PlayersController : MonoBehaviour
         trail.emitting = true;
 
         StartCoroutine(StopDash());
+
         timeSinceLastDash = Time.time;
     }
 
@@ -190,7 +197,9 @@ public class PlayersController : MonoBehaviour
             {
                 PlayersController player = hit.GetComponent<PlayersController>();
                 if (player.playerID != playerID)
+                {
                     player.HitPlayer(1, 30, hand, player);
+                }
             }
         }
     }
@@ -216,6 +225,8 @@ public class PlayersController : MonoBehaviour
         StartCoroutine(gameManager.StunAndSlowMotion());
         gameManager.ShakeCamera(1f, .1f);
 
+        soundManager.PlayPunch();
+
         if (player.stunned)
             rb.AddForce(new Vector2(-direction.x, 1) * force, ForceMode2D.Impulse);
 
@@ -224,38 +235,27 @@ public class PlayersController : MonoBehaviour
 
     private void Dead()
     {
-        if(lifes <= 0)
+        if(lifes <= 0 && !isDead)
         {
             Instantiate(explosion, transform.position, Quaternion.identity);
             IsDead(true);
+            soundManager.PlayDie();
         }
     }
 
     void LimitedZone()
     {
-        if (Camera.main.WorldToScreenPoint(transform.position).x > Screen.width)
-        {
-            rb.AddForce(new Vector2(-2, 1), ForceMode2D.Impulse);
-            StartCoroutine(StunWihoutFreeze());
-        }
+        if (Camera.main.WorldToScreenPoint(transform.position).x < 0 && gameManager.inGame)
+            lifes = 0;
 
-        if (Camera.main.WorldToScreenPoint(transform.position).x < 0)
-        {
-            rb.AddForce(new Vector2(2, 1), ForceMode2D.Impulse);
-            StartCoroutine(StunWihoutFreeze());
-        }
-
-        if (Camera.main.WorldToScreenPoint(transform.position).y > Screen.height)
-        {
-            rb.AddForce(new Vector2(0, -2), ForceMode2D.Impulse);
-            StartCoroutine(StunWihoutFreeze());
-        }
+        if (Camera.main.WorldToScreenPoint(transform.position).x > Screen.width && gameManager.inGame)
+            lifes = 0;
 
         if (Camera.main.WorldToScreenPoint(transform.position).y < 0 && gameManager.inGame)
-        {
             lifes = 0;
-        }
 
+        if (Camera.main.WorldToScreenPoint(transform.position).y > Screen.height && gameManager.inGame)
+            lifes = 0;
     }
 
     public void IsDead(bool state)

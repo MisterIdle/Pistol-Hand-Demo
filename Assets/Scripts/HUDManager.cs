@@ -9,6 +9,7 @@ public class HUDManager : MonoBehaviour
     public Image[] face;
     public Image[] lives;
     public Image[] inputs;
+    public Image backother;
 
     public RectTransform start;
     public RectTransform move;
