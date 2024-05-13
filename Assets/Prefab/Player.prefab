@@ -263,7 +263,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerID: 0
-  lifes: 1
+  lifes: 2
   stunned: 0
   isDead: 0
   wins: 0
@@ -278,11 +278,13 @@ MonoBehaviour:
   explosion: {fileID: 2264460792506307572, guid: e2f64259711d0f94db75a037e4270f0e, type: 3}
   shootCooldown: 0.5
   dash: 0
-  dashTime: 0.5
-  dashCooldown: 2
+  dashTime: 0.3
+  dashCooldown: 1
+  hitedForce: 15
   hand: {fileID: 2804290217738970132}
   face: {fileID: 702232491239003212}
   crown: {fileID: 2890420676051575244}
+  soundManager: {fileID: 0}
   jumped: 0
   shooting: 0
 --- !u!114 &5380616594145753213

@@ -36,6 +36,7 @@ public class PlayersController : MonoBehaviour
     public float dashTime = 0.5f;
     public float dashCooldown = 2f;
     private float timeSinceLastDash = 0f;
+    public int hitedForce = 10;
 
     [Header("HUD")]
     public Image skinHUD;
@@ -180,7 +181,9 @@ public class PlayersController : MonoBehaviour
         Vector2 direction = transform.position - hand.transform.position;
         direction.Normalize();
 
-        rb.AddForce(-direction * 30, ForceMode2D.Impulse);
+        rb.velocity = Vector2.zero;
+        rb.AddForce(-direction * 25, ForceMode2D.Impulse);
+
         trail.emitting = true;
 
         StartCoroutine(StopDash());
@@ -198,7 +201,7 @@ public class PlayersController : MonoBehaviour
                 PlayersController player = hit.GetComponent<PlayersController>();
                 if (player.playerID != playerID)
                 {
-                    player.HitPlayer(1, 30, hand, player);
+                    player.HitPlayer(1, hitedForce, hand, player);
                 }
             }
         }
@@ -228,7 +231,7 @@ public class PlayersController : MonoBehaviour
         soundManager.PlayPunch();
 
         if (player.stunned)
-            rb.AddForce(new Vector2(-direction.x, 1) * force, ForceMode2D.Impulse);
+            rb.AddForce(new Vector2(-direction.x, 1.5f) * force, ForceMode2D.Impulse);
 
         player.lifes -= degat;
     }
@@ -254,7 +257,13 @@ public class PlayersController : MonoBehaviour
         if (Camera.main.WorldToScreenPoint(transform.position).y < 0 && gameManager.inGame)
             lifes = 0;
 
-        if (Camera.main.WorldToScreenPoint(transform.position).y > Screen.height && gameManager.inGame)
+        if (Camera.main.WorldToScreenPoint(transform.position).x < 0 && gameManager.inLobby)
+            lifes = 0;
+
+        if (Camera.main.WorldToScreenPoint(transform.position).x > Screen.width && gameManager.inLobby)
+            lifes = 0;
+
+        if (Camera.main.WorldToScreenPoint(transform.position).y < 0 && gameManager.inLobby)
             lifes = 0;
     }
 
@@ -296,7 +305,7 @@ public class PlayersController : MonoBehaviour
     {
         stunned = true;
         skins.spriteRenderer.color = Color.red;
-        yield return new WaitForSeconds(0.8f);
+        yield return new WaitForSeconds(0.6f);
         stunned = false;
         skins.spriteRenderer.color = Color.white;
         rb.velocity = Vector2.zero;
@@ -314,14 +323,20 @@ public class PlayersController : MonoBehaviour
 
     public void ColoredCrown()
     {
-        if(wins == 1)
-            crown.color = new Color(0.5f, 0.3f, 0.1f);
+        if (wins == 1)
+            crown.color = new Color(1, 1, 1);
 
         else if (wins == 2)
-            crown.color = Color.gray;
+            crown.color = new Color(0.8f, 0.5f, 0.2f);
 
-        else if(wins == 3)
-            crown.color = Color.yellow;
+        else if (wins == 3)
+            crown.color = new Color(0.8f, 0.8f, 0.8f);
+
+        else if (wins == 4)
+            crown.color = new Color(1, 0.8f, 0);
+
+        else if (wins == 5)
+            crown.color = new Color(0, 0.8f, 1);
     }
 
     bool IsGrounded()

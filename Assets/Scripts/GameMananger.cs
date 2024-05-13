@@ -50,11 +50,12 @@ public class GameManager : MonoBehaviour
         DontDestroyOnLoad(Camera.main.gameObject);
 
         hudManager = FindObjectOfType<HUDManager>();
+        mainCamera = Camera.main;
 
         hudManager.backother.gameObject.SetActive(false);
 
         StartCoroutine(Rotate());
-
+        
         FadeOut(0.5f);
     }
 
@@ -95,7 +96,6 @@ public class GameManager : MonoBehaviour
     public void InLobby()
     {
         playersManager = FindObjectOfType<PlayersManager>();
-
         soundManager.musicAudio.volume = 0.2f;
 
         if ((playersDeath == playersInGame - 1 && playersInGame != 1 && !inGame) || (playersInGame > 1 && playersDeath == playersInGame))
@@ -148,6 +148,8 @@ public class GameManager : MonoBehaviour
 
         yield return new WaitForSeconds(0.5f);
 
+        virtualCamera.m_Lens.OrthographicSize = 14;
+
         spawnPoints = GameObject.FindGameObjectsWithTag("Spawn");
 
         foreach (PlayersController player in FindObjectsOfType<PlayersController>())
@@ -159,7 +161,8 @@ public class GameManager : MonoBehaviour
 
             player.IsDead(false);
             player.lifes = 3;
-            player.transform.position = spawnPoints[player.playerID].transform.position;
+            int randomPos = Random.Range(0, spawnPoints.Length);
+            player.transform.position = spawnPoints[randomPos].transform.position;
         }
 
         yield return new WaitForSeconds(0.2f);
@@ -185,7 +188,7 @@ public class GameManager : MonoBehaviour
         MoveCameraTransition(false, 0.5f);
         FadeOut(0.5f);
 
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.5f);
 
         hudManager.timer.text = "0.00";
         
@@ -388,6 +391,8 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
 
         LoadScene(0);
+
+        virtualCamera.m_Lens.OrthographicSize = 12;
 
         inLobby = true;
 

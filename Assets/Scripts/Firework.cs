@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class Firework : MonoBehaviour
 {
-    // Get the particle system component
     private ParticleSystem ps;
 
     void Start()
