@@ -54,17 +54,6 @@
             "bindings": [
                 {
                     "name": "",
-                    "id": "5a26f7f0-66c8-4b37-a895-a4642046b058",
-                    "path": "<Gamepad>/buttonSouth",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Controller",
-                    "action": "Jump",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "59b4d7c9-2127-46b7-bb97-4bde16233bd8",
                     "path": "<Gamepad>/leftStick",
                     "interactions": "",
@@ -170,6 +159,28 @@
                     "processors": "",
                     "groups": "Controller",
                     "action": "Change",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f8dcb665-267e-4ebc-8f83-54a66d2a48d3",
+                    "path": "<Gamepad>/leftTrigger",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Jump",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "a7d3c2f6-cd4f-4a8b-947e-72bae57e4fdd",
+                    "path": "<Gamepad>/buttonSouth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Jump",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

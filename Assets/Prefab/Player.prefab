@@ -280,7 +280,7 @@ MonoBehaviour:
   dash: 0
   dashTime: 0.3
   dashCooldown: 1
-  hitedForce: 40
+  hitedForce: 60
   hand: {fileID: 2804290217738970132}
   face: {fileID: 702232491239003212}
   crown: {fileID: 2890420676051575244}

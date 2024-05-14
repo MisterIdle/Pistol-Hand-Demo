@@ -56,13 +56,25 @@ public class GameManager : MonoBehaviour
         hudManager.backother.gameObject.SetActive(false);
 
         StartCoroutine(Rotate());
-        
+
+        Screen.SetResolution(1920, 1080, true);
+
+        for (int i = 0; i < 4; i++)
+        {
+            hudManager.crown[i].enabled = false;
+        }
+
         FadeOut(0.5f);
     }
 
     private void FixedUpdate()
     {
         InGame();
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Application.Quit();
+        }
 
         if (shakeTime > 0)
         {
@@ -125,7 +137,7 @@ public class GameManager : MonoBehaviour
             {
                 Debug.Log("Reload Round");
                 inGame = false;
-                RoundEndStop();
+                StartCoroutine(RoundEndStop());
             }
         }
 
@@ -134,7 +146,7 @@ public class GameManager : MonoBehaviour
     IEnumerator LoadRandomArena()
     {
         yield return new WaitForSeconds(1f);
-        
+
         MoveCameraTransition(true, 0.5f);
         map = false;
 
@@ -212,7 +224,7 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
 
         hudManager.timer.text = "0.00";
-        
+
         round++;
         playersDeath = 0;
 
@@ -235,14 +247,14 @@ public class GameManager : MonoBehaviour
         inGame = true;
 
         hudManager.StartTimer();
-        
+
         foreach (PlayersController player in FindObjectsOfType<PlayersController>())
         {
             player.canMove = true;
         }
     }
 
-    void RoundEndStop()
+    IEnumerator RoundEndStop()
     {
         hudManager.StopTimer();
 
@@ -250,45 +262,61 @@ public class GameManager : MonoBehaviour
         {
             player.crown.enabled = false;
 
-            hudManager.backother.gameObject.SetActive(true);
-
-            if (!player.isDead && !draw)
+            if (!player.isDead)
             {
-                switch (player.playerID)
+                yield return new WaitForSeconds(0.1f);
+
+                hudManager.backother.gameObject.SetActive(true);
+
+                if (playersDeath == playersInGame)
+                    draw = true;
+
+                if (!draw)
                 {
-                    case 0:
-                        hudManager.count.text = "Blue";
-                        hudManager.whoWins.text = "Wins";
-                        hudManager.count.color = Color.blue;
-                        hudManager.whoWins.color = Color.white;
-                        player.crown.enabled = true;
-                        break;
-                    case 1:
-                        hudManager.count.text = "Red";
-                        hudManager.whoWins.text = "Wins";
-                        hudManager.count.color = Color.red;
-                        hudManager.whoWins.color = Color.white;
-                        player.crown.enabled = true;
-                        break;
-                    case 2:
-                        hudManager.count.text = "Green";
-                        hudManager.whoWins.text = "Wins";
-                        hudManager.count.color = Color.green;
-                        hudManager.whoWins.color = Color.white;
-                        player.crown.enabled = true;
-                        break;
-                    case 3:
-                        hudManager.count.text = "Yellow";
-                        hudManager.whoWins.text = "Wins";
-                        hudManager.count.color = Color.yellow;
-                        hudManager.whoWins.color = Color.white;
-                        player.crown.enabled = true;
-                        break;
+                    switch (player.playerID)
+                    {
+                        case 0:
+                            hudManager.count.text = "Blue";
+                            hudManager.whoWins.text = "Wins";
+                            hudManager.count.color = Color.blue;
+                            hudManager.whoWins.color = Color.white;
+                            player.crown.enabled = true;
+                            break;
+                        case 1:
+                            hudManager.count.text = "Red";
+                            hudManager.whoWins.text = "Wins";
+                            hudManager.count.color = Color.red;
+                            hudManager.whoWins.color = Color.white;
+                            player.crown.enabled = true;
+                            break;
+                        case 2:
+                            hudManager.count.text = "Green";
+                            hudManager.whoWins.text = "Wins";
+                            hudManager.count.color = Color.green;
+                            hudManager.whoWins.color = Color.white;
+                            player.crown.enabled = true;
+                            break;
+                        case 3:
+                            hudManager.count.text = "Yellow";
+                            hudManager.whoWins.text = "Wins";
+                            hudManager.count.color = Color.yellow;
+                            hudManager.whoWins.color = Color.white;
+                            player.crown.enabled = true;
+                            break;
+                    }
+
+                    player.wins++;
+
+                }
+                else
+                {
+                    hudManager.count.text = "Draw";
+                    hudManager.whoWins.text = "Oof";
+                    hudManager.count.color = Color.white;
+                    hudManager.whoWins.color = Color.white;
                 }
 
                 soundManager.PlayWin();
-
-                player.wins++;
 
                 draw = false;
 
@@ -413,6 +441,11 @@ public class GameManager : MonoBehaviour
         round = 0;
         hudManager.round.text = "Lobby";
         hudManager.timer.text = "0.00";
+
+        for (int i = 0; i < 4; i++)
+        {
+            hudManager.crown[i].enabled = false;
+        }
 
         StartCoroutine(Rotate());
 
